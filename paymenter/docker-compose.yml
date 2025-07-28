@@ -15,8 +15,8 @@ services:
       - "./database:/var/lib/mysql"
     environment:
       <<: *db-environment
-      MYSQL_DATABASE: "${MYSQL_DATABASE}"
-      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_DATABASE: "paymenter"
+      MYSQL_USER: "paymenter"
 
   cache:
     image: redis:alpine

@@ -16,3 +16,11 @@ RUN apk add --no-cache git && \
     rm -rf .git && \
     # Fix permissions for the web server user
     chown -R www-data:www-data /app/extensions/Gateways/Razorpay
+
+COPY themes /app/themes
+RUN chmod -R 755 /app/themes
+
+RUN apk add --no-cache nodejs npm
+
+RUN npm install && npm run build veltrixv2
+

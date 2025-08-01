@@ -335,6 +335,7 @@ class Pelican extends Server
 
                 // Return the allocation id for the SERVER_PORT
                 return [
+                    'node_id' => $node['id'],
                     'auto_deploy' => false,
                     'environment' => $environment,
                     'allocations_needed' => 1,

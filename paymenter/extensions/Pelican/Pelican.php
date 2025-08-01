@@ -56,6 +56,7 @@ class Pelican extends Server
         ])->$method($req_url, $data);
 
         if (!$response->successful()) {
+            print_r($response->json());
             throw new \Exception($response->json()['errors'][0]['detail']);
         }
 

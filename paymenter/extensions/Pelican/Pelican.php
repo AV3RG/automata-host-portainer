@@ -292,7 +292,7 @@ class Pelican extends Server
             $serverCreationData['allocation'] = $deploymentData['allocation'];
             $serverCreationData['deploy'] = [
                 'node_id' => $deploymentData['node_id'] ?? null,
-            ]
+            ];
         }
 
         $server = $this->request('/api/application/servers', 'post', $serverCreationData);

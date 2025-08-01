@@ -258,7 +258,11 @@ class Pelican extends Server
             'egg' => (int) $settings['egg_id'],
             'docker_image' => $eggData['attributes']['docker_image'],
             'startup' => $eggData['attributes']['startup'],
-            'environment' => array_map('strval', $deploymentData['environment']),
+            'environment' => array_reduce(array_keys($deploymentData['environment']), function($carry, $key) use ($deploymentData) {
+                $carry[] = $key;
+                $carry[] = strval($deploymentData['environment'][$key]);
+                return $carry;
+            }, []),
             'skip_scripts' => !!($settings['skip_scripts'] ?? false),
             'oom_killer' => !!($settings['oom_killer'] ?? false),
             'limits' => [

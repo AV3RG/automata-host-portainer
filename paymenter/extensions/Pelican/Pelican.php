@@ -256,6 +256,7 @@ class Pelican extends Server
             'name' => isset($settings['servername']) ? $settings['servername'] : $service->product->name . ' #' . $service->id,
             'user' => (int) $user,
             'egg' => (int) $settings['egg_id'],
+            'node_id' => $deploymentData['node_id'] ?? null,
             'docker_image' => $eggData['attributes']['docker_image'],
             'startup' => $eggData['attributes']['startup'],
             'environment' => array_reduce(array_keys($deploymentData['environment']), function($carry, $key) use ($deploymentData) {

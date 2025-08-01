@@ -56,7 +56,7 @@ class Pelican extends Server
         ])->$method($req_url, $data);
 
         if (!$response->successful()) {
-            print_r($response->json());
+            \Log::error('Pelican API Error: ' . json_encode($response->json()));
             throw new \Exception($response->json()['errors'][0]['detail']);
         }
 

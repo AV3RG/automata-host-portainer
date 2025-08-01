@@ -56,7 +56,7 @@ class Pelican extends Server
         ])->$method($req_url, $data);
 
         if (!$response->successful()) {
-            print_r($response->json());
+            \Log::error('Pelican API Error: ' . json_encode($response->json()) . ' URL: ' . $req_url . ' Data: ' . json_encode($data));
             throw new \Exception($response->json()['errors'][0]['detail']);
         }
 
@@ -255,12 +255,16 @@ class Pelican extends Server
             'external_id' => (string) $service->id,
             'name' => isset($settings['servername']) ? $settings['servername'] : $service->product->name . ' #' . $service->id,
             'user' => (int) $user,
-            'egg' => $settings['egg_id'],
+            'egg' => (int) $settings['egg_id'],
             'docker_image' => $eggData['attributes']['docker_image'],
             'startup' => $eggData['attributes']['startup'],
-            'environment' => $deploymentData['environment'],
-            'skip_scripts' => $settings['skip_scripts'] ?? false,
-            'oom_disabled' => !($settings['oom_killer'] ?? false),
+            'environment' => array_reduce(array_keys($deploymentData['environment']), function($carry, $key) use ($deploymentData) {
+                $carry[] = $key;
+                $carry[] = strval($deploymentData['environment'][$key]);
+                return $carry;
+            }, []),
+            'skip_scripts' => !!($settings['skip_scripts'] ?? false),
+            'oom_killer' => !!($settings['oom_killer'] ?? false),
             'limits' => [
                 'memory' => (int) $settings['memory'],
                 'swap' => (int) $settings['swap'],
@@ -274,7 +278,7 @@ class Pelican extends Server
                 'allocations' => $deploymentData['allocations_needed'] + (int) $settings['additional_allocations'],
                 'backups' => (int) $settings['backups'],
             ],
-            'start_on_completion' => $settings['start_on_completion'] ?? false,
+            'start_on_completion' => !!($settings['start_on_completion'] ?? false),
         ];
         if ($deploymentData['auto_deploy']) {
             $serverCreationData['deploy'] = [
@@ -331,6 +335,7 @@ class Pelican extends Server
 
                 // Return the allocation id for the SERVER_PORT
                 return [
+                    'node_id' => $node['id'],
                     'auto_deploy' => false,
                     'environment' => $environment,
                     'allocations_needed' => 1,

@@ -260,7 +260,7 @@ class Pelican extends Server
             'startup' => $eggData['attributes']['startup'],
             'environment' => $deploymentData['environment'],
             'skip_scripts' => $settings['skip_scripts'] ?? false,
-            'oom_disabled' => !($settings['oom_killer'] ?? false),
+            'oom_killer' => ($settings['oom_killer'] ?? false),
             'limits' => [
                 'memory' => (int) $settings['memory'],
                 'swap' => (int) $settings['swap'],
@@ -274,7 +274,7 @@ class Pelican extends Server
                 'allocations' => $deploymentData['allocations_needed'] + (int) $settings['additional_allocations'],
                 'backups' => (int) $settings['backups'],
             ],
-            'start_on_completion' => $settings['start_on_completion'] ?? false,
+            'start_on_completion' => !!($settings['start_on_completion'] ?? false),
         ];
         if ($deploymentData['auto_deploy']) {
             $serverCreationData['deploy'] = [

@@ -18,7 +18,7 @@ RUN apk add --no-cache git && \
     chown -R www-data:www-data /app/extensions/Gateways/Razorpay
 
 COPY themes /app/themes
-COPY extensions/Pelican /app/extensions/Pelican
+COPY extensions/Pelican /app/extensions/Servers/Pelican
 RUN chmod -R 755 /app/themes
 
 RUN apk add --no-cache nodejs npm

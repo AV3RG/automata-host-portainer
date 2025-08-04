@@ -21,7 +21,12 @@ COPY themes /app/themes
 COPY extensions/Pelican /app/extensions/Servers/Pelican
 RUN chmod -R 755 /app/themes
 
+
 RUN apk add --no-cache nodejs npm
 
 RUN npm install && npm run build veltrixv2
 
+RUN apk add --no-cache patch
+
+COPY add_to_pelican.patch .
+RUN patch -p1 < add_to_pelican.patch

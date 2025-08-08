@@ -149,22 +149,22 @@
                                 <button type="button" 
                                         onclick="setBillingPeriod('monthly')"
                                         id="monthly-btn"
-                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm">
+                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base">
                                     Monthly
                                 </button>
                                 <button type="button" 
                                         onclick="setBillingPeriod('yearly')"
                                         id="yearly-btn"
-                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base">
+                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm">
                                     <span>Yearly</span>
-                                    <span class="ml-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded-full text-xs font-bold dark:bg-primary/20 group-[.bg-primary]:text-white group-[.bg-primary]:bg-white/20">-50%</span>
+                                    <span class="ml-1 bg-white/20 text-white px-1.5 py-0.5 rounded-full text-xs font-bold">-50%</span>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
                     <script>
-                        let currentBillingPeriod = 'monthly';
+                        let currentBillingPeriod = 'yearly';
                         
                         function setBillingPeriod(period) {
                             currentBillingPeriod = period;
@@ -186,6 +186,11 @@
                             // Update all product prices
                             updateProductPrices();
                         }
+                        
+                        // Initialize with yearly pricing on page load
+                        document.addEventListener('DOMContentLoaded', function() {
+                            updateProductPrices();
+                        });
                         
                         function updateProductPrices() {
                             // Update all product prices based on selected billing period
@@ -274,7 +279,7 @@
                                                       data-default="{{ $defaultPrice }}"
                                                       data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
                                                       data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
-                                                    {{ $monthlyPrice }} / month
+                                                    {{ $yearlyPrice }} / year
                                                 </span>
                                             </p>
                                         </div>
@@ -346,7 +351,7 @@
                                                   data-default="{{ $defaultPrice }}"
                                                   data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
                                                   data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
-                                                {{ $monthlyPrice }} / month
+                                                {{ $yearlyPrice }} / year
                                             </span>
                                         </p>
                                     </div>

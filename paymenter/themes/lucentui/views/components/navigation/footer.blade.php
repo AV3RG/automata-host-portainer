@@ -21,22 +21,7 @@
             </div>
 
             <div class="flex flex-col lg:items-end gap-4">
-                <a href="https://paymenter.org" target="_blank" 
-                   class="group p-2 bg-gradient-to-br from-[#4667FF]/10 to-[#4667FF]/20 hover:from-[#4667FF]/20 hover:to-[#4667FF]/30 rounded-lg border border-[#4667FF]/20 hover:border-[#4667FF]/40 transition-all duration-200 hover:scale-105 self-start lg:self-end flex items-center gap-2"
-                   title="Powered by Paymenter">
-                    <svg class="size-5 text-[#4667FF]/70 group-hover:text-[#4667FF] transition-colors duration-200" 
-                         width="150" height="205" viewBox="0 0 150 205" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_1_17)">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 107V205H42.8571V139.638H100C133.333 139.638 150 123 150 89.7246V69.5L75 107V69.5L148.227 32.8863C143.133 10.9621 127.057 0 100 0H0V107ZM0 107V69.5L75 32V69.5L0 107Z"></path>
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_1_17">
-                                <rect width="150" height="205"></rect>
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <span class="text-sm text-[#4667FF]/70 group-hover:text-[#4667FF] transition-colors duration-200">{{ __('Powered by Paymenter') }}</span>
-                </a> 
+                 
                 <div class="flex flex-wrap gap-4 text-sm">
                     @if (theme('privacy_policy_url'))
                         <a href="{{ theme('privacy_policy_url') }}" class="text-base/60 hover:text-secondary transition-colors duration-200">{{ __('Privacy Policy') }}</a>

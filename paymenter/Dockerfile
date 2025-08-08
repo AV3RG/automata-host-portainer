@@ -19,6 +19,8 @@ RUN apk add --no-cache git && \
 
 COPY themes /app/themes
 COPY extensions/Pelican /app/extensions/Servers/Pelican
+COPY extensions/Pages /app/extensions/Others/Pages
+
 RUN chmod -R 755 /app/themes
 
 

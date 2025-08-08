@@ -220,6 +220,33 @@
                                 
                                 element.innerHTML = displayText;
                             });
+                            
+                            // Update checkout links with the correct plan ID
+                            updateCheckoutLinks();
+                        }
+                        
+                        function updateCheckoutLinks() {
+                            const checkoutLinks = document.querySelectorAll('.checkout-link');
+                            
+                            checkoutLinks.forEach(link => {
+                                const monthlyPlanId = link.getAttribute('data-monthly-plan');
+                                const yearlyPlanId = link.getAttribute('data-yearly-plan');
+                                const defaultPlanId = link.getAttribute('data-default-plan');
+                                
+                                let selectedPlanId;
+                                if (currentBillingPeriod === 'yearly' && yearlyPlanId) {
+                                    selectedPlanId = yearlyPlanId;
+                                } else if (currentBillingPeriod === 'monthly' && monthlyPlanId) {
+                                    selectedPlanId = monthlyPlanId;
+                                } else {
+                                    selectedPlanId = defaultPlanId;
+                                }
+                                
+                                // Update the href with the selected plan ID
+                                const currentHref = link.getAttribute('href');
+                                const baseUrl = currentHref.split('?')[0];
+                                link.setAttribute('href', `${baseUrl}?plan=${selectedPlanId}`);
+                            });
                         }
                     </script>
                 </div>
@@ -287,8 +314,24 @@
                                     
                                     <div class="mt-4">
                                         @if ($isAvailable && theme('direct_checkout', false))
-                                            <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}" wire:navigate 
-                                               class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                            @php
+                                                $availablePlans = $product->availablePlans();
+                                                $monthlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                                });
+                                                $yearlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                                });
+                                                
+                                                // Default to yearly plan if available, otherwise monthly, otherwise first available plan
+                                                $defaultPlan = $yearlyPlan ?: $monthlyPlan ?: $availablePlans->first();
+                                                $defaultPlanId = $defaultPlan ? $defaultPlan->id : null;
+                                            @endphp
+                                            <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}?plan={{ $defaultPlanId }}" wire:navigate 
+                                               class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105 checkout-link"
+                                               data-monthly-plan="{{ $monthlyPlan ? $monthlyPlan->id : '' }}"
+                                               data-yearly-plan="{{ $yearlyPlan ? $yearlyPlan->id : '' }}"
+                                               data-default-plan="{{ $defaultPlanId }}">
                                                 {{ __('product.add_to_cart') }}
                                                 <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
                                             </a>
@@ -357,8 +400,24 @@
                                     </div>
                                     
                                     @if ($isAvailable && theme('direct_checkout', false))
-                                        <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}" wire:navigate 
-                                           class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                        @php
+                                            $availablePlans = $product->availablePlans();
+                                            $monthlyPlan = $availablePlans->first(function($plan) {
+                                                return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                            });
+                                            $yearlyPlan = $availablePlans->first(function($plan) {
+                                                return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                            });
+                                            
+                                            // Default to yearly plan if available, otherwise monthly, otherwise first available plan
+                                            $defaultPlan = $yearlyPlan ?: $monthlyPlan ?: $availablePlans->first();
+                                            $defaultPlanId = $defaultPlan ? $defaultPlan->id : null;
+                                        @endphp
+                                        <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}?plan={{ $defaultPlanId }}" wire:navigate 
+                                           class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105 checkout-link"
+                                           data-monthly-plan="{{ $monthlyPlan ? $monthlyPlan->id : '' }}"
+                                           data-yearly-plan="{{ $yearlyPlan ? $yearlyPlan->id : '' }}"
+                                           data-default-plan="{{ $defaultPlanId }}">
                                             {{ __('product.add_to_cart') }}
                                             <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
                                         </a>

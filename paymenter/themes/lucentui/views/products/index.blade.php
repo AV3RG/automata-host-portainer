@@ -140,6 +140,79 @@
                         <x-ri-price-tag-3-fill class="size-4" />
                         <span class="text-sm">{{ count($products) }} {{ Str::plural('product', count($products)) }}</span>
                     </div>
+                    
+                    <!-- Billing Period Chooser -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-medium text-color-muted">Billing Period:</span>
+                        <div class="relative bg-background-tertiary border border-neutral/50 rounded-full p-1 shadow-sm">
+                            <div class="flex items-center">
+                                <button type="button" 
+                                        onclick="setBillingPeriod('monthly')"
+                                        id="monthly-btn"
+                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm">
+                                    Monthly
+                                </button>
+                                <button type="button" 
+                                        onclick="setBillingPeriod('yearly')"
+                                        id="yearly-btn"
+                                        class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base">
+                                    Yearly
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <script>
+                        let currentBillingPeriod = 'monthly';
+                        
+                        function setBillingPeriod(period) {
+                            currentBillingPeriod = period;
+                            
+                            // Update button styles
+                            const monthlyBtn = document.getElementById('monthly-btn');
+                            const yearlyBtn = document.getElementById('yearly-btn');
+                            
+                            if (period === 'monthly') {
+                                monthlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm';
+                                yearlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base';
+                            } else {
+                                monthlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base';
+                                yearlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm';
+                            }
+                            
+                            // Update all product prices
+                            updateProductPrices();
+                        }
+                        
+                        function updateProductPrices() {
+                            // Update all product prices based on selected billing period
+                            const priceElements = document.querySelectorAll('.product-price');
+                            
+                            priceElements.forEach(element => {
+                                const monthlyPrice = element.getAttribute('data-monthly');
+                                const yearlyPrice = element.getAttribute('data-yearly');
+                                const defaultPrice = element.getAttribute('data-default');
+                                const monthlyRaw = element.getAttribute('data-monthly-raw');
+                                const yearlyRaw = element.getAttribute('data-yearly-raw');
+                                
+                                let displayText;
+                                if (currentBillingPeriod === 'yearly') {
+                                    // For yearly, show monthly equivalent with yearly price in brackets
+                                    const yearlyActual = yearlyRaw || defaultPrice;
+                                    // Extract numeric value from yearly price and divide by 12
+                                    const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
+                                    const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
+                                    displayText = `${yearlyActual.charAt(0)}${monthlyEquivalent} / month<br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                } else {
+                                    // For monthly, show monthly price
+                                    const monthlyActual = monthlyPrice || defaultPrice;
+                                    displayText = `${monthlyActual} / month`;
+                                }
+                                
+                                element.innerHTML = displayText;
+                            });
+                        }
+                    </script>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -178,7 +251,27 @@
                                                 {{ $product->name }}
                                             </h3>
                                             <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }} mb-2">
-                                                {{ $product->price() }}
+                                                @php
+                                                    $availablePlans = $product->availablePlans();
+                                                    $monthlyPlan = $availablePlans->first(function($plan) {
+                                                        return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                                    });
+                                                    $yearlyPlan = $availablePlans->first(function($plan) {
+                                                        return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                                    });
+                                                    
+                                                    $defaultPrice = $product->price();
+                                                    $monthlyPrice = $monthlyPlan ? $monthlyPlan->price() : $defaultPrice;
+                                                    $yearlyPrice = $yearlyPlan ? $yearlyPlan->price() : $defaultPrice;
+                                                @endphp
+                                                <span class="product-price" 
+                                                      data-monthly="{{ $monthlyPrice }}" 
+                                                      data-yearly="{{ $yearlyPrice }}"
+                                                      data-default="{{ $defaultPrice }}"
+                                                      data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
+                                                      data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
+                                                    {{ $monthlyPrice }} / month
+                                                </span>
                                             </p>
                                             @if($product->stock !== null)
                                                 <div class="text-xs text-color-muted">
@@ -235,7 +328,27 @@
                                     
                                     <div class="flex items-center justify-between mb-6">
                                         <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }}">
-                                            {{ $product->price() }}
+                                            @php
+                                                $availablePlans = $product->availablePlans();
+                                                $monthlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                                });
+                                                $yearlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                                });
+                                                
+                                                $defaultPrice = $product->price();
+                                                $monthlyPrice = $monthlyPlan ? $monthlyPlan->price() : $defaultPrice;
+                                                $yearlyPrice = $yearlyPlan ? $yearlyPlan->price() : $defaultPrice;
+                                            @endphp
+                                            <span class="product-price" 
+                                                  data-monthly="{{ $monthlyPrice }}" 
+                                                  data-yearly="{{ $yearlyPrice }}"
+                                                  data-default="{{ $defaultPrice }}"
+                                                  data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
+                                                  data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
+                                                {{ $monthlyPrice }} / month
+                                            </span>
                                         </p>
                                         @if($product->stock !== null)
                                             <div class="text-xs text-color-muted font-medium">

@@ -156,7 +156,8 @@
                                         onclick="setBillingPeriod('yearly')"
                                         id="yearly-btn"
                                         class="relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base">
-                                    Yearly
+                                    <span>Yearly</span>
+                                    <span class="ml-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded-full text-xs font-bold dark:bg-primary/20 group-[.bg-primary]:text-white group-[.bg-primary]:bg-white/20">-50%</span>
                                 </button>
                             </div>
                         </div>
@@ -175,9 +176,11 @@
                             if (period === 'monthly') {
                                 monthlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm';
                                 yearlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base';
+                                yearlyBtn.querySelector('span:last-child').className = 'ml-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded-full text-xs font-bold dark:bg-primary/20';
                             } else {
                                 monthlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 text-color-muted hover:text-color-base';
                                 yearlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm';
+                                yearlyBtn.querySelector('span:last-child').className = 'ml-1 bg-white/20 text-white px-1.5 py-0.5 rounded-full text-xs font-bold';
                             }
                             
                             // Update all product prices
@@ -197,12 +200,13 @@
                                 
                                 let displayText;
                                 if (currentBillingPeriod === 'yearly') {
-                                    // For yearly, show monthly equivalent with yearly price in brackets
+                                    // For yearly, show slashed pricing with strike-through
                                     const yearlyActual = yearlyRaw || defaultPrice;
+                                    const monthlyActual = monthlyPrice || defaultPrice;
                                     // Extract numeric value from yearly price and divide by 12
                                     const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
                                     const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
-                                    displayText = `${yearlyActual.charAt(0)}${monthlyEquivalent} / month<br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                    displayText = `<span class="line-through text-color-muted">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
                                 } else {
                                     // For monthly, show monthly price
                                     const monthlyActual = monthlyPrice || defaultPrice;

@@ -206,7 +206,7 @@
                                     // Extract numeric value from yearly price and divide by 12
                                     const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
                                     const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
-                                    displayText = `<span class="line-through text-color-muted">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                    displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
                                 } else {
                                     // For monthly, show monthly price
                                     const monthlyActual = monthlyPrice || defaultPrice;

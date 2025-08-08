@@ -229,7 +229,7 @@
                                     
                                     @if(theme('direct_checkout', false) && $product->description)
                                         <article class="prose dark:prose-invert text-color-muted text-sm mb-4 leading-relaxed">
-                                            {!! $product->description !!}
+                                            {!! html_entity_decode($product->description) !!}
                                         </article>
                                     @endif
                                     

@@ -24,7 +24,7 @@
                             </h1>
                             <div>
                                 <article class="prose dark:prose-invert text-color-muted text-sm leading-relaxed">
-                                    {!! $product->description !!}
+                                    {!! html_entity_decode($product->description) !!}
                                 </article>
                             </div>
                         </div>

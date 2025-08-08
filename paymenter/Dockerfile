@@ -24,7 +24,7 @@ RUN chmod -R 755 /app/themes
 
 RUN apk add --no-cache nodejs npm
 
-RUN npm install && npm run build veltrixv2
+RUN npm install && npm run build veltrixv2 && npm run build lucentui
 
 RUN apk add --no-cache patch
 

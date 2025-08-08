@@ -189,64 +189,94 @@
                         
                         // Initialize with yearly pricing on page load
                         document.addEventListener('DOMContentLoaded', function() {
-                            updateProductPrices();
+                            // Add a small delay to ensure all elements are properly loaded
+                            setTimeout(() => {
+                                updateProductPrices();
+                            }, 100);
                         });
                         
                         function updateProductPrices() {
-                            // Update all product prices based on selected billing period
-                            const priceElements = document.querySelectorAll('.product-price');
-                            
-                            priceElements.forEach(element => {
-                                const monthlyPrice = element.getAttribute('data-monthly');
-                                const yearlyPrice = element.getAttribute('data-yearly');
-                                const defaultPrice = element.getAttribute('data-default');
-                                const monthlyRaw = element.getAttribute('data-monthly-raw');
-                                const yearlyRaw = element.getAttribute('data-yearly-raw');
+                            try {
+                                // Update all product prices based on selected billing period
+                                const priceElements = document.querySelectorAll('.product-price');
                                 
-                                let displayText;
-                                if (currentBillingPeriod === 'yearly') {
-                                    // For yearly, show slashed pricing with strike-through
-                                    const yearlyActual = yearlyRaw || defaultPrice;
-                                    const monthlyActual = monthlyPrice || defaultPrice;
-                                    // Extract numeric value from yearly price and divide by 12
-                                    const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
-                                    const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
-                                    displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
-                                } else {
-                                    // For monthly, show monthly price
-                                    const monthlyActual = monthlyPrice || defaultPrice;
-                                    displayText = `${monthlyActual} / month`;
-                                }
+                                priceElements.forEach(element => {
+                                    if (!element) return;
+                                    
+                                    const monthlyPrice = element.getAttribute('data-monthly');
+                                    const yearlyPrice = element.getAttribute('data-yearly');
+                                    const defaultPrice = element.getAttribute('data-default');
+                                    const monthlyRaw = element.getAttribute('data-monthly-raw');
+                                    const yearlyRaw = element.getAttribute('data-yearly-raw');
+                                    
+                                    let displayText;
+                                    if (currentBillingPeriod === 'yearly') {
+                                        // For yearly, show slashed pricing with strike-through
+                                        const yearlyActual = yearlyRaw || defaultPrice;
+                                        const monthlyActual = monthlyPrice || defaultPrice;
+                                        // Extract numeric value from yearly price and divide by 12
+                                        const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
+                                        const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
+                                        displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                    } else {
+                                        // For monthly, show monthly price
+                                        const monthlyActual = monthlyPrice || defaultPrice;
+                                        displayText = `${monthlyActual} / month`;
+                                    }
+                                    
+                                    if (displayText) {
+                                        element.innerHTML = displayText;
+                                    }
+                                });
                                 
-                                element.innerHTML = displayText;
-                            });
-                            
-                            // Update checkout links with the correct plan ID
-                            updateCheckoutLinks();
+                                // Update checkout links with the correct plan ID
+                                updateCheckoutLinks();
+                            } catch (error) {
+                                console.error('Error updating product prices:', error);
+                            }
                         }
                         
                         function updateCheckoutLinks() {
-                            const checkoutLinks = document.querySelectorAll('.checkout-link');
-                            
-                            checkoutLinks.forEach(link => {
-                                const monthlyPlanId = link.getAttribute('data-monthly-plan');
-                                const yearlyPlanId = link.getAttribute('data-yearly-plan');
-                                const defaultPlanId = link.getAttribute('data-default-plan');
+                            try {
+                                const checkoutLinks = document.querySelectorAll('.checkout-link');
                                 
-                                let selectedPlanId;
-                                if (currentBillingPeriod === 'yearly' && yearlyPlanId) {
-                                    selectedPlanId = yearlyPlanId;
-                                } else if (currentBillingPeriod === 'monthly' && monthlyPlanId) {
-                                    selectedPlanId = monthlyPlanId;
-                                } else {
-                                    selectedPlanId = defaultPlanId;
-                                }
-                                
-                                // Update the href with the selected plan ID
-                                const currentHref = link.getAttribute('href');
-                                const baseUrl = currentHref.split('?')[0];
-                                link.setAttribute('href', `${baseUrl}?plan=${selectedPlanId}`);
-                            });
+                                checkoutLinks.forEach(link => {
+                                    if (!link) return;
+                                    
+                                    // Ensure button text is preserved
+                                    const buttonText = link.querySelector('.button-text');
+                                    if (!buttonText || !buttonText.textContent.trim()) {
+                                        const textSpan = document.createElement('span');
+                                        textSpan.className = 'button-text';
+                                        textSpan.textContent = '{{ __("product.add_to_cart") }}';
+                                        link.insertBefore(textSpan, link.firstChild);
+                                    }
+                                    
+                                    const monthlyPlanId = link.getAttribute('data-monthly-plan');
+                                    const yearlyPlanId = link.getAttribute('data-yearly-plan');
+                                    const defaultPlanId = link.getAttribute('data-default-plan');
+                                    
+                                    let selectedPlanId;
+                                    if (currentBillingPeriod === 'yearly' && yearlyPlanId) {
+                                        selectedPlanId = yearlyPlanId;
+                                    } else if (currentBillingPeriod === 'monthly' && monthlyPlanId) {
+                                        selectedPlanId = monthlyPlanId;
+                                    } else {
+                                        selectedPlanId = defaultPlanId;
+                                    }
+                                    
+                                    // Only update if we have a valid plan ID
+                                    if (selectedPlanId) {
+                                        const currentHref = link.getAttribute('href');
+                                        if (currentHref) {
+                                            const baseUrl = currentHref.split('?')[0];
+                                            link.setAttribute('href', `${baseUrl}?plan=${selectedPlanId}`);
+                                        }
+                                    }
+                                });
+                            } catch (error) {
+                                console.error('Error updating checkout links:', error);
+                            }
                         }
                     </script>
                 </div>
@@ -332,7 +362,7 @@
                                                data-monthly-plan="{{ $monthlyPlan ? $monthlyPlan->id : '' }}"
                                                data-yearly-plan="{{ $yearlyPlan ? $yearlyPlan->id : '' }}"
                                                data-default-plan="{{ $defaultPlanId }}">
-                                                {{ __('product.add_to_cart') }}
+                                                <span class="button-text">{{ __('product.add_to_cart') }}</span>
                                                 <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
                                             </a>
                                         @elseif ($isAvailable)
@@ -418,7 +448,7 @@
                                            data-monthly-plan="{{ $monthlyPlan ? $monthlyPlan->id : '' }}"
                                            data-yearly-plan="{{ $yearlyPlan ? $yearlyPlan->id : '' }}"
                                            data-default-plan="{{ $defaultPlanId }}">
-                                            {{ __('product.add_to_cart') }}
+                                            <span class="button-text">{{ __('product.add_to_cart') }}</span>
                                             <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
                                         </a>
                                     @elseif ($isAvailable)

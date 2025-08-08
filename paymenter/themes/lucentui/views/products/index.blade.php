@@ -229,7 +229,7 @@
                                 <div class="flex items-center gap-2 bg-background-secondary/70 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
                                     <div class="w-2 h-2 {{ $isAvailable ? 'bg-green-500' : 'bg-red-500' }} rounded-full animate-pulse"></div>
                                     <span class="text-xs font-bold {{ $isAvailable ? 'text-green-600' : 'text-red-600' }} uppercase">
-                                        {{ $isAvailable ? 'Available' : 'Out of Stock' }}
+                                        {{ $isAvailable ? $product->stock . ' in stock' : 'Out of Stock' }}
                                     </span>
                                 </div>
                             </div>
@@ -273,11 +273,6 @@
                                                     {{ $monthlyPrice }} / month
                                                 </span>
                                             </p>
-                                            @if($product->stock !== null)
-                                                <div class="text-xs text-color-muted">
-                                                    {{ $product->stock }} in stock
-                                                </div>
-                                            @endif
                                         </div>
                                     </div>
                                     
@@ -350,11 +345,6 @@
                                                 {{ $monthlyPrice }} / month
                                             </span>
                                         </p>
-                                        @if($product->stock !== null)
-                                            <div class="text-xs text-color-muted font-medium">
-                                                {{ $product->stock }} in stock
-                                            </div>
-                                        @endif
                                     </div>
                                     
                                     @if ($isAvailable && theme('direct_checkout', false))
@@ -382,6 +372,160 @@
                             <div class="absolute inset-0 bg-gradient-to-br {{ $isAvailable ? 'from-primary/5 to-primary/10' : 'from-red-500/5 to-red-500/10' }} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                         </div>
                     @endforeach
+
+                    <!--Custom Plan -->
+                    <div class="group relative bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 border border-neutral/50 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden animate-fade-in-up" 
+                             style="animation-delay: {{ $index * 0.1 }}s;">
+                            
+                            <div class="absolute top-4 right-4 z-10">
+                                <div class="flex items-center gap-2 bg-background-secondary/70 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                                    <div class="w-2 h-2 {{ $isAvailable ? 'bg-green-500' : 'bg-red-500' }} rounded-full animate-pulse"></div>
+                                    <span class="text-xs font-bold {{ $isAvailable ? 'text-green-600' : 'text-red-600' }} uppercase">
+                                        {{ $isAvailable ? $product->stock . ' in stock' : 'Out of Stock' }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            @if(theme('small_images', false))
+                                <div class="p-6">
+                                    <div class="flex items-start gap-4 mb-4">
+                                        @if ($product->image)
+                                            <div class="flex-shrink-0 relative">
+                                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
+                                                    class="w-20 h-20 object-cover rounded-2xl shadow-lg {{ !$isAvailable ? 'filter grayscale opacity-60' : '' }}">
+                                                @if (!$isAvailable)
+                                                    <div class="absolute inset-0 bg-red-500/20 rounded-2xl"></div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                        <div class="flex-1">
+                                            <h3 class="text-xl font-bold text-color-base mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                                                {{ $product->name }}
+                                            </h3>
+                                            <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }} mb-2">
+                                                @php
+                                                    $availablePlans = $product->availablePlans();
+                                                    $monthlyPlan = $availablePlans->first(function($plan) {
+                                                        return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                                    });
+                                                    $yearlyPlan = $availablePlans->first(function($plan) {
+                                                        return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                                    });
+                                                    
+                                                    $defaultPrice = $product->price();
+                                                    $monthlyPrice = $monthlyPlan ? $monthlyPlan->price() : $defaultPrice;
+                                                    $yearlyPrice = $yearlyPlan ? $yearlyPlan->price() : $defaultPrice;
+                                                @endphp
+                                                <span class="product-price" 
+                                                      data-monthly="{{ $monthlyPrice }}" 
+                                                      data-yearly="{{ $yearlyPrice }}"
+                                                      data-default="{{ $defaultPrice }}"
+                                                      data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
+                                                      data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
+                                                    {{ $monthlyPrice }} / month
+                                                </span>
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        @if ($isAvailable && theme('direct_checkout', false))
+                                            <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}" wire:navigate 
+                                               class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                                {{ __('product.add_to_cart') }}
+                                                <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
+                                            </a>
+                                        @elseif ($isAvailable)
+                                            <a href="{{ route('products.show', ['category' => $product->category, 'product' => $product->slug]) }}" wire:navigate 
+                                               class="group/btn w-full inline-flex items-center justify-center gap-2 bg-background-tertiary hover:bg-background-tertiary/80 border border-neutral/50 text-color-base px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg">
+                                                {{ __('general.view') }}
+                                                <x-ri-arrow-right-fill class="size-4 transform transition-transform duration-300 group-hover/btn:translate-x-1" />
+                                            </a>
+                                        @else
+                                            <button disabled 
+                                                    class="w-full inline-flex items-center justify-center gap-2 bg-red-100 dark:bg-red-900/30 border border-red-500 text-red-600 dark:text-red-400 px-4 py-3 rounded-2xl font-medium cursor-not-allowed opacity-75">
+                                                {{ __('product.out_of_stock', ['product' => $product->name]) }}
+                                                <x-ri-close-circle-fill class="size-4" />
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                @if ($product->image)
+                                    <div class="relative overflow-hidden">
+                                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
+                                            class="w-full h-56 object-cover {{ !$isAvailable ? 'filter grayscale opacity-60' : '' }}">
+                                        @if (!$isAvailable)
+                                            <div class="absolute inset-0 bg-red-500/20"></div>
+                                        @endif
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                    </div>
+                                @endif
+                                
+                                <div class="p-6">
+                                    <h3 class="text-xl font-bold text-color-base mb-4 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                                        {{ $product->name }}
+                                    </h3>
+                                    
+                                    @if(theme('direct_checkout', false) && $product->description)
+                                        <article class="prose dark:prose-invert text-color-muted text-sm mb-4 leading-relaxed">
+                                            {!! html_entity_decode($product->description) !!}
+                                        </article>
+                                    @endif
+                                    
+                                    <div class="flex items-center justify-between mb-6">
+                                        <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }}">
+                                            @php
+                                                $availablePlans = $product->availablePlans();
+                                                $monthlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['month', 'monthly']);
+                                                });
+                                                $yearlyPlan = $availablePlans->first(function($plan) {
+                                                    return in_array(strtolower($plan->billing_unit), ['year', 'yearly', 'annual']);
+                                                });
+                                                
+                                                $defaultPrice = $product->price();
+                                                $monthlyPrice = $monthlyPlan ? $monthlyPlan->price() : $defaultPrice;
+                                                $yearlyPrice = $yearlyPlan ? $yearlyPlan->price() : $defaultPrice;
+                                            @endphp
+                                            <span class="product-price" 
+                                                  data-monthly="{{ $monthlyPrice }}" 
+                                                  data-yearly="{{ $yearlyPrice }}"
+                                                  data-default="{{ $defaultPrice }}"
+                                                  data-monthly-raw="{{ $monthlyPlan ? $monthlyPlan->price() : $product->price() }}"
+                                                  data-yearly-raw="{{ $yearlyPlan ? $yearlyPlan->price() : $product->price() }}">
+                                                {{ $monthlyPrice }} / month
+                                            </span>
+                                        </p>
+
+                                    </div>
+                                    
+                                    @if ($isAvailable && theme('direct_checkout', false))
+                                        <a href="{{ route('products.checkout', ['category' => $category, 'product' => $product->slug]) }}" wire:navigate 
+                                           class="group/btn w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                            {{ __('product.add_to_cart') }}
+                                            <x-ri-shopping-cart-fill class="size-4 transform transition-transform duration-300 group-hover/btn:scale-110" />
+                                        </a>
+                                    @elseif ($isAvailable)
+                                        <a href="{{ route('products.show', ['category' => $product->category, 'product' => $product->slug]) }}" wire:navigate 
+                                           class="group/btn w-full inline-flex items-center justify-center gap-2 bg-background-tertiary hover:bg-background-tertiary/80 border border-neutral/50 text-color-base px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg">
+                                            {{ __('general.view') }}
+                                            <x-ri-arrow-right-fill class="size-4 transform transition-transform duration-300 group-hover/btn:translate-x-1" />
+                                        </a>
+                                    @else
+                                        <button disabled 
+                                                class="w-full inline-flex items-center justify-center gap-2 bg-red-100 dark:bg-red-900/30 border border-red-500 text-red-600 dark:text-red-400 px-4 py-3 rounded-2xl font-medium cursor-not-allowed opacity-75">
+                                            {{ __('product.out_of_stock', ['product' => $product->name]) }}
+                                            <x-ri-close-circle-fill class="size-4" />
+                                        </button>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <div class="absolute inset-0 bg-gradient-to-br {{ $isAvailable ? 'from-primary/5 to-primary/10' : 'from-red-500/5 to-red-500/10' }} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+
                 </div>
             </div>
         </div>

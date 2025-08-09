@@ -32,6 +32,7 @@
                     @if (theme('support_url'))
                         <a href="{{ theme('support_url') }}" class="text-base/60 hover:text-secondary transition-colors duration-200">{{ __('Support') }}</a>
                     @endif
+                    <a href="https://automata.host/refund-policy" class="text-base/60 hover:text-secondary transition-colors duration-200">{{ __('Refund Policy') }}</a>
                 </div>
 
                 <div class="flex gap-3">

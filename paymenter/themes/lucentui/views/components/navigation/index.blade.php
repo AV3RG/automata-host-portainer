@@ -7,8 +7,7 @@
             <div class="flex flex-row items-center justify-between w-full h-16 px-6">
                 <div class="flex items-center gap-6">
                     <a href="{{ route('home') }}" class="flex items-center h-10 gap-2" wire:navigate>
-                        <x-logo class="h-10" />
-                        <span class="text-xl font-bold leading-none tracking-tight flex items-center">{{ config('app.name') }}</span>
+                        <img src="{{ asset('assets/extended/automata_full.png') }}" alt="logo" class="h-10" />
                     </a>
                     <div class="hidden md:flex flex-row gap-2">
                         @foreach (\App\Classes\Navigation::getLinks() as $nav)

@@ -33,6 +33,9 @@ RUN apk add --no-cache patch
 COPY patches/pelican_register_sync.patch .
 COPY patches/pelican_reset_sync.patch .
 COPY patches/pelican_change_sync.patch .
+
 RUN patch -p1 < pelican_register_sync.patch
 RUN patch -p1 < pelican_reset_sync.patch
 RUN patch -p1 < pelican_change_sync.patch
+
+COPY assets /app/public/assets/extended

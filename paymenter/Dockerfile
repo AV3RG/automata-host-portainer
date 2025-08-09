@@ -30,5 +30,7 @@ RUN npm install && npm run build veltrixv2 && npm run build lucentui
 
 RUN apk add --no-cache patch
 
-COPY add_to_pelican.patch .
-RUN patch -p1 < add_to_pelican.patch
+COPY patches/pelican_register_sync.patch .
+COPY patches/pelican_reset_sync.patch .
+RUN patch -p1 < pelican_register_sync.patch
+RUN patch -p1 < pelican_reset_sync.patch

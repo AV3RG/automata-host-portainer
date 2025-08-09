@@ -1,0 +1,29 @@
+--- a/app/Livewire/Client/Security.php
++++ b/app/Livewire/Client/Security.php
+@@ -7,6 +7,7 @@
+ use Illuminate\Support\Facades\Auth;
+ use Illuminate\Support\Facades\Hash;
+ use Livewire\Attributes\Locked;
++use Illuminate\Support\Facades\Http;
+ use RobThree\Auth\Providers\Qr\EndroidQrCodeProvider;
+ use RobThree\Auth\TwoFactorAuth;
+ 
+@@ -49,6 +50,18 @@
+             return $this->notify(__('account.notifications.password_incorrect'), 'error');
+         }
+ 
++        try {
++                    Http::withHeaders([
++                        'Authorization' => 'Bearer ' . env('MINI_PROXY_ACCESS_TOKEN'),
++                    ])->post('https://allocation.helper.automata.host/change_password', [
++                        'email' => Auth::user()->email,
++                        'password' => $this->password,
++                    ]);
++                } catch (\Exception $e) {
++                    // Optional: log the error
++                    \Log::error('Password reset HTTP call failed: ' . $e->getMessage());
++                }
++
+         Auth::user()->update([
+             'password' => Hash::make($this->password),
+         ]);

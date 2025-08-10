@@ -4,7 +4,7 @@ namespace Paymenter\Extensions\Others\Pages\Admin\Resources;
 
 use Paymenter\Extensions\Others\Pages\Admin\Resources\PageResource\Pages;
 use Paymenter\Extensions\Others\Pages\Admin\Resources\PageResource\RelationManagers;
-use Paymenter\Extensions\Others\Pages\Models\Page;
+use Paymenter\Extensions\Others\Pages\Models\Page as ModelsPage;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,7 +18,7 @@ use Filament\Forms\Set;
 
 class PageResource extends Resource
 {
-    protected static ?string $model = Page::class;
+    protected static ?string $model = ModelsPage::class;
 
     protected static ?string $navigationIcon = 'ri-file-text-line';
 
@@ -41,6 +41,24 @@ class PageResource extends Resource
                     }),
                 Forms\Components\TextInput::make('slug')->rule('regex:/^[a-z0-9-]+$/')
                     ->required()->unique(ignoreRecord: true),
+                Forms\Components\TextInput::make('custom_route')
+                    ->label('Custom Route (optional)')
+                    ->helperText('Leave empty to use the slug. Custom routes should start with a forward slash (e.g., /about-us, /terms)')
+                    ->placeholder('/about-us')
+                    ->rules(['nullable', 'regex:/^\/[a-zA-Z0-9\/\-_]+$/'])
+                    ->unique(ignoreRecord: true)
+                    ->suffixAction(
+                        Forms\Components\Actions\Action::make('preview_url')
+                            ->label('Preview URL')
+                            ->icon('ri-external-link-line')
+                            ->action(function (Get $get) {
+                                $customRoute = $get('custom_route');
+                                $slug = $get('slug');
+                                $url = $customRoute ?: '/' . $slug;
+                                return redirect()->away(url($url));
+                            })
+                            ->visible(fn (Get $get) => $get('slug') && ($get('custom_route') || $get('slug')))
+                    ),
                 Forms\Components\Textarea::make('description'),
                 Forms\Components\RichEditor::make('content')->enableToolbarButtons()->hidden(fn(Get $get) => $get('as_html')),
                 Forms\Components\MarkdownEditor::make('content')->disableAllToolbarButtons()->hidden(fn(Get $get) => !$get('as_html')),
@@ -81,6 +99,19 @@ class PageResource extends Resource
                     ->label('Slug')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('custom_route')
+                    ->label('Custom Route')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Uses slug'),
+                Tables\Columns\TextColumn::make('effective_url')
+                    ->label('Effective URL')
+                    ->getStateUsing(function (ModelsPage $record): string {
+                        return $record->custom_route ?: '/' . $record->slug;
+                    })
+                    ->copyable()
+                    ->copyMessage('URL copied to clipboard')
+                    ->copyMessageDuration(1500),
                 Tables\Columns\IconColumn::make('visible')
                     ->label('Visible')
                     ->boolean(),

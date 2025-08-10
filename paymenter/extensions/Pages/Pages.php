@@ -96,10 +96,11 @@ class Pages extends Extension
             if ($page->visibility == 'admin' && (!auth()->check() || is_null(auth()->user()->role))) {
                 continue;
             }
+            
             $navigation[] = [
                 'name' => $page->title,
-                'route' => 'extensions.others.pages',
-                'params' => ['fallbackPlaceholder' => $page->slug],
+                'route' => $page->route_name,
+                'params' => $page->route_params,
             ];
         }
         return $navigation;

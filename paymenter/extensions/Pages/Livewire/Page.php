@@ -25,6 +25,14 @@ class Page extends Component
         }
     }
 
+    /**
+     * Get the effective route for this page
+     */
+    public function getEffectiveRouteAttribute()
+    {
+        return $this->page->custom_route ?: '/' . $this->page->slug;
+    }
+
     public function render()
     {
         return view('others.pages::page', [

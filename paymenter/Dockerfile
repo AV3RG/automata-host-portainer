@@ -30,12 +30,14 @@ RUN npm install && npm run build veltrixv2 && npm run build lucentui
 
 RUN apk add --no-cache patch
 
-COPY patches/pelican_register_sync.patch .
-COPY patches/pelican_reset_sync.patch .
-COPY patches/pelican_change_sync.patch .
-
-RUN patch -p1 < pelican_register_sync.patch
-RUN patch -p1 < pelican_reset_sync.patch
-RUN patch -p1 < pelican_change_sync.patch
+# Copy all patches and apply them automatically
+COPY patches/ /tmp/patches/
+RUN for patch_file in /tmp/patches/*.patch; do \
+        if [ -f "$patch_file" ]; then \
+            echo "Applying patch: $(basename "$patch_file")"; \
+            patch -p1 < "$patch_file"; \
+        fi; \
+    done && \
+    rm -rf /tmp/patches/
 
 COPY assets /app/public/assets/extended

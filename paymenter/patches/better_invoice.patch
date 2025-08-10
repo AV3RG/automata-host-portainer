@@ -1,0 +1,346 @@
+--- a/resources/views/pdf/invoice.blade.php
++++ b/resources/views/pdf/invoice.blade.php
+@@ -1,155 +1,229 @@
+ <html lang="en">
+-
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <title>{{ __('invoices.invoice', ['id' => $invoice->number]) }}</title>
+     <style>
+         body {
+-            font-family:
+-                system-ui,
+-                -apple-system,
+-                /* Firefox supports this but not yet `system-ui` */
+-                'Segoe UI',
+-                Roboto,
+-                Helvetica,
+-                Arial,
+-                sans-serif,
+-                'Apple Color Emoji',
+-                'Segoe UI Emoji';
+-            font-size: 16px;
++            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
++            font-size: 14px;
++            color: #333;
++            margin: 0;
++            padding: 0;
++            background: #f8f9fa;
+         }
+ 
++        .invoice-container {
++            max-width: 900px;
++            margin: auto;
++            background: #fff;
++            padding: 40px;
++            border-radius: 8px;
++            box-shadow: 0 0 10px rgba(0,0,0,0.05);
++        }
++
++        .invoice-header {
++            display: flex;
++            justify-content: space-between;
++            align-items: center;
++            border-bottom: 3px solid #007bff;
++            padding-bottom: 15px;
++            margin-bottom: 30px;
++        }
++
++        .invoice-header img {
++            height: 50px;
++        }
++
++        .invoice-title {
++            font-size: 28px;
++            font-weight: bold;
++            color: #007bff;
++        }
++
++        .status {
++            font-weight: bold;
++            padding: 5px 10px;
++            border-radius: 4px;
++            font-size: 14px;
++        }
++
++        .status.paid {
++            background: #d4edda;
++            color: #155724;
++        }
++
++        .status.unpaid {
++            background: #fff3cd;
++            color: #856404;
++        }
++
++        .invoice-info {
++            margin-bottom: 30px;
++        }
++
++        .invoice-info table {
++            width: 100%;
++        }
++
++        .invoice-info td {
++            padding: 5px 0;
++            vertical-align: top;
++        }
++
+         table {
+             width: 100%;
+             border-collapse: collapse;
+         }
+ 
+         table th {
++            background: #007bff;
++            color: #fff;
++            padding: 10px;
+             text-align: left;
+-            color: #999;
+-            border-bottom: 2px solid #ddd;
+-            padding: 10px 0 15px 0;
+-            font-size: 0.75em;
+-            text-transform: uppercase;
++            font-size: 13px;
+         }
+ 
+         table td {
+-            padding: 15px 0;
++            padding: 10px;
++            border-bottom: 1px solid #ddd;
+         }
+ 
+-        table th:last-child {
+-            text-align: right;
++        tbody tr:nth-child(even) {
++            background: #f2f2f2;
+         }
+ 
+-        table tr td {
+-            padding: 0;
+-        }
+-
+-        table tr td:last-child {
++        .total-section {
++            margin-top: 20px;
+             text-align: right;
+         }
+ 
+-        .invoice-items tbody tr:first-child td {
+-            padding-top: 10px;
++        .total-section table {
++            width: 300px;
++            float: right;
+         }
+ 
+-        .invoice-info {
+-            font-size: 0.875em;
++        .total-section td {
++            padding: 8px;
+         }
+ 
+-        .invoice-info td {
+-            padding: 2px 0;
++        .total-section tr:last-child td {
++            font-weight: bold;
++            font-size: 16px;
++            border-top: 2px solid #007bff;
+         }
+     </style>
+ </head>
+-
+ <body>
+-    @if(config('settings.logo'))
+-    <div style="margin: 20px 0 70px 0;">
+-        <img style="height: 30px" src="{{ public_path('storage/' . config('settings.logo')) }}"
+-            alt="{{ config('app.name') }}">
+-    </div>
+-    @endif
++    <div class="invoice-container">
++        <!-- Header -->
++        <div class="invoice-header">
++            @if(config('settings.logo'))
++                <img src="{{ public_path('storage/' . config('settings.logo')) }}" alt="{{ config('app.name') }}">
++            @endif
++            <div class="invoice-title">
++                Invoice: #{{ $invoice->number }}
++                <div class="status {{ $invoice->status == 'paid' ? 'paid' : 'unpaid' }}">
++                    {{ ucfirst($invoice->status) }}
++                </div>
++            </div>
++        </div>
+ 
+-    <!-- Invoice status -->
+-    <div style="margin-bottom: 20px;font-size: 20px">
+-        <strong>{{ __('invoices.status') }}:</strong><span
+-            style="@if($invoice->status == 'paid') color: green; @else color: orange; @endif">
+-            {{ ucfirst($invoice->status) }}
+-        </span>
+-    </div>
++        <!-- Invoice Info -->
++        <div class="invoice-info">
++            <table>
++                <tr>
++                    <td>
++                        <strong>{{ __('invoices.issued_to') }}</strong><br>
++                        {{ $invoice->user->name }}<br>
++                        @foreach($invoice->user->properties()->with('parent_property')->whereHas('parent_property', function($query) {
++                            $query->where('show_on_invoice', true);
++                        })->get() as $property)
++                            {{ $property->value }}<br>
++                        @endforeach
++                    </td>
++                    <td>
++                        <strong>{{ strtoupper(__('invoices.bill_to')) }}</strong><br>
++                        {{ config('settings.company_name') }}<br>
++                        {{ config('settings.company_address') }}<br>
++                        {{ config('settings.company_address2') }}<br>
++                        {{ config('settings.company_zip') }} {{ config('settings.company_city') }}<br>
++                        {{ config('settings.company_state') }} {{ config('settings.company_country') }}<br>
++                        {{ config('settings.company_tax_id') }}<br>
++                        {{ config('settings.company_id') }}<br>
++                    </td>
++                </tr>
++                <tr>
++                    <td>{{ __('invoices.invoice_date') }}: <strong>{{ $invoice->created_at->format('d/m/Y') }}</strong></td>
++                    <td>{{ __('invoices.invoice_no') }}: <strong>{{ $invoice->number }}</strong></td>
++                </tr>
++            </table>
++        </div>
+ 
+-    <table class="invoice-info">
+-        <tr>
+-            <td rowspan="2" style="font-size: 1em;vertical-align: top;">
+-                <strong>{{ __('invoices.issued_to') }}</strong><br>
+-                {{ $invoice->user->name }} <br />
+-                @foreach($invoice->user->properties()->with('parent_property')->whereHas('parent_property', function
+-                ($query) {
+-                $query->where('show_on_invoice', true);
+-                })->get() as $property)
+-                {{ $property->value }} <br />
++        <!-- Items Table -->
++        <table>
++            <thead>
++                <tr>
++                    <th>{{ __('invoices.item') }}</th>
++                    <th>{{ __('invoices.quantity') }}</th>
++                    <th>{{ __('invoices.unit_price') }}</th>
++                    <th>{{ __('invoices.total') }}</th>
++                </tr>
++            </thead>
++            <tbody>
++                @foreach($invoice->items as $item)
++                <tr>
++                    <td>{{ $item->description }}</td>
++                    <td>{{ $item->quantity }}</td>
++                    <td>{{ $item->formattedPrice }}</td>
++                    <td>{{ $item->formattedTotal }}</td>
++                </tr>
+                 @endforeach
+-            </td>
+-            <td>
+-                <strong>{{ strtoupper(__('invoices.bill_to')) }}</strong> <br />
+-                {{ config('settings.company_name') }} <br />
+-                {{ config('settings.company_address') }} {{ config('settings.company_address2') }} <br />
+-                {{ config('settings.company_zip') }} {{ config('settings.company_city') }} <br />
+-                {{ config('settings.company_state') }} {{ config('settings.company_country') }}  <br />
+-                {{ config('settings.company_tax_id') }} <br />
+-                {{ config('settings.company_id') }} <br />
+-            </td>
+-        </tr>
+-    </table>
+-    <p>{{ __('invoices.invoice_date') }}: <strong>{{ $invoice->created_at->format('d/m/Y') }}</strong></p>
+-    <p>{{ __('invoices.invoice_no') }}: <strong>{{ $invoice->number }}</strong></p>
++            </tbody>
++        </table>
+ 
+-    <table style="margin-top: 40px;" class="invoice-items">
+-        <thead>
+-            <tr>
+-                <th>{{ __('invoices.item') }}</th>
+-                <th style="width: 100px">{{ __('invoices.quantity') }}</th>
+-                <th>{{ __('invoices.unit_price') }}</th>
+-                <th>{{ __('invoices.total') }}</th>
+-            </tr>
+-        </thead>
+-        <tbody>
+-            @foreach($invoice->items as $item)
+-            <tr>
+-                <td>{{ $item->description }}</td>
+-                <td>{{ $item->quantity }}</td>
+-                <td>{{ $item->formattedPrice }}</td>
+-                <td>{{ $item->formattedTotal }}</td>
+-            </tr>
+-            @endforeach
+-        </tbody>
+-    </table>
++        <!-- Transactions -->
++        @if($invoice->transactions->count() > 0)
++        <h3 style="margin-top: 40px;">{{ __('invoices.transactions') }}</h3>
++        <table>
++            <thead>
++                <tr>
++                    <th>{{ __('invoices.transaction_id') }}</th>
++                    <th>{{ __('invoices.payment_date') }}</th>
++                    <th>{{ __('invoices.amount') }}</th>
++                    <th>{{ __('invoices.payment_method') }}</th>
++                </tr>
++            </thead>
++            <tbody>
++                @foreach($invoice->transactions as $transaction)
++                <tr>
++                    <td>{{ $transaction->transaction_id }}</td>
++                    <td>{{ $transaction->created_at->format('d/m/Y') }}</td>
++                    <td>{{ $transaction->formattedAmount }}</td>
++                    <td>{{ $transaction->gateway ? $transaction->gateway->name : '' }}</td>
++                </tr>
++                @endforeach
++            </tbody>
++        </table>
++        @endif
+ 
+-    @if($invoice->transactions->count() > 0)
+-    <table style="margin-top: 80px;" class="invoice-items">
+-        <thead>
+-            <tr>
+-                <th>{{ __('invoices.transaction_id') }}</th>
+-                <th>{{ __('invoices.payment_date') }}</th>
+-                <th>{{ __('invoices.amount') }}</th>
+-                <th>{{ __('invoices.payment_method') }}</th>
+-            </tr>
+-        </thead>
+-        <tbody>
+-            @foreach($invoice->transactions as $transaction)
+-            <tr>
+-                <td>{{ $transaction->transaction_id }}</td>
+-                <td>{{ $transaction->created_at->format('d/m/Y') }}</td>
+-                <td>{{ $transaction->formattedAmount }}</td>
+-                <td>{{ $transaction->gateway ? $transaction->gateway->name : '' }}</td>
+-            </tr>
+-            @endforeach
+-        </tbody>
+-    </table>
+-    @endif
++        <!-- Totals -->
++        <div class="total-section">
++            <table>
++
++
++
++
++
++
++
++
++                <tr>
++                    <td>{{ __('invoices.total') }}</td>
++                    <td>{{ $invoice->formattedTotal }}</td>
++                </tr>
++            </table>
++        </div>
++    </div>
+ </body>
+-
+ </html>

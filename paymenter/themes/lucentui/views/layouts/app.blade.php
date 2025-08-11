@@ -343,8 +343,8 @@
             }
         })();
         
-        console.log('%c🚀 Powered with LucentUI', 'color: #006effff; font-size: 16px; font-weight: bold;');
-        console.log('%cCustom integrations loaded successfully!', 'color: #4ecdc4; font-size: 12px;');
+        // console.log('%c🚀 Powered with LucentUI', 'color: #006effff; font-size: 16px; font-weight: bold;');
+        // console.log('%cCustom integrations loaded successfully!', 'color: #4ecdc4; font-size: 12px;');
     </script>
 </body>
 </html>

@@ -189,11 +189,48 @@
                         
                         // Initialize with yearly pricing on page load
                         document.addEventListener('DOMContentLoaded', function() {
+                            // Set initial state to yearly
+                            currentBillingPeriod = 'yearly';
+                            
+                            // Ensure yearly button is properly styled initially
+                            const yearlyBtn = document.getElementById('yearly-btn');
+                            if (yearlyBtn) {
+                                yearlyBtn.className = 'relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-primary text-white shadow-sm';
+                            }
+                            
                             // Add a small delay to ensure all elements are properly loaded
                             setTimeout(() => {
                                 updateProductPrices();
                             }, 100);
                         });
+                        
+                        // Also try to initialize when the page is fully loaded
+                        window.addEventListener('load', function() {
+                            if (currentBillingPeriod === 'yearly') {
+                                setTimeout(() => {
+                                    updateProductPrices();
+                                }, 50);
+                            }
+                        });
+                        
+                        // Additional fallback initialization
+                        let initAttempts = 0;
+                        const maxInitAttempts = 5;
+                        
+                        function attemptInitialization() {
+                            if (initAttempts >= maxInitAttempts) return;
+                            
+                            const priceElements = document.querySelectorAll('.product-price');
+                            if (priceElements.length > 0) {
+                                updateProductPrices();
+                            } else {
+                                initAttempts++;
+                                setTimeout(attemptInitialization, 200);
+                            }
+                        }
+                        
+                        // Try initialization after a longer delay as fallback
+                        setTimeout(attemptInitialization, 500);
                         
                         function updateProductPrices() {
                             try {
@@ -217,7 +254,12 @@
                                         // Extract numeric value from yearly price and divide by 12
                                         const yearlyNumeric = parseFloat(yearlyActual.replace(/[^0-9.]/g, ''));
                                         const monthlyEquivalent = (yearlyNumeric / 12).toFixed(2);
-                                        displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${yearlyActual.charAt(0)}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                        
+                                        // Extract currency symbol from the original price
+                                        const currencyMatch = yearlyActual.match(/^[^\d]*/);
+                                        const currencySymbol = currencyMatch ? currencyMatch[0] : '$';
+                                        
+                                        displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${currencySymbol}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
                                     } else {
                                         // For monthly, show monthly price
                                         const monthlyActual = monthlyPrice || defaultPrice;

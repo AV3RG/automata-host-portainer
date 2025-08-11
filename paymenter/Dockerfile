@@ -35,9 +35,22 @@ COPY patches/ /tmp/patches/
 RUN for patch_file in /tmp/patches/*.patch; do \
         if [ -f "$patch_file" ]; then \
             echo "Applying patch: $(basename "$patch_file")"; \
-            patch -p1 < "$patch_file"; \
+            if ! patch -p1 < "$patch_file"; then \
+                echo "ERROR: Failed to apply patch: $(basename "$patch_file")"; \
+                exit 1; \
+            fi; \
+            echo "Successfully applied patch: $(basename "$patch_file")"; \
         fi; \
     done && \
     rm -rf /tmp/patches/
+
+# Remove all languages except English from the lang folder
+RUN if [ -d "/app/lang" ]; then \
+        echo "Removing all languages except English from lang folder"; \
+        find /app/lang -maxdepth 1 -type d ! -name "en" ! -name "lang" -exec rm -rf {} +; \
+        echo "Languages removed successfully"; \
+    else \
+        echo "Lang folder not found, skipping language cleanup"; \
+    fi
 
 COPY assets /app/public/assets/extended

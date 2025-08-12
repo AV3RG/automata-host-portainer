@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Invoice #{{{ invoice_number }}}</title>
+    <style>
+        @font-face {
+            font-family: 'DejaVu Sans';
+            src: url('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        * {
+            font-family: 'DejaVu Sans', Arial, sans-serif !important;
+        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+        line-height: 1.5;
+    }
+    .invoice-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .invoice-header {
+        padding: 32px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .invoice-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1f2937;
+    }
+    .header-table {
+        width: 100%;
+    }
+    .header-table td {
+        vertical-align: middle;
+    }
+    .action-buttons {
+        text-align: right;
+    }
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        display: inline-block;
+        margin-left: 8px;
+    }
+    .btn-paid {
+        background-color: #10b981;
+        color: white;
+    }
+    .btn-pending {
+        background-color: #f59e0b;
+        color: white;
+    }
+    .btn-failed {
+        background-color: #ef4444;
+        color: white;
+    }
+    .btn-download {
+        background-color: #ec4899;
+        color: white;
+    }
+    .invoice-details {
+        padding: 32px;
+    }
+    .details-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .detail-section {
+        vertical-align: top;
+        width: 33%;
+    }
+    .section-header {
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .section-icon {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: #ef4444;
+        margin-right: 5px;
+    }
+    .section-content h3 {
+        font-size: 16px;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    .section-content p {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+    .items-header {
+        margin-bottom: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .items-table th {
+        text-align: left;
+        padding: 8px 0;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .items-table td {
+        padding: 8px 0;
+        font-size: 14px;
+        color: #1f2937;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .text-right {
+        text-align: right;
+    }
+    .summary-section {
+        padding: 0 32px 32px;
+    }
+    .summary-row {
+        width: 100%;
+        font-size: 14px;
+        padding: 4px 0;
+    }
+    .summary-row td {
+        padding: 4px 0;
+    }
+    .summary-row.total {
+        background-color: #fce7f3;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: #ec4899;
+    }
+    .transactions {
+        padding: 0 32px 32px;
+    }
+    .transactions-header {
+        margin-bottom: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .transactions-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .transactions-table th {
+        text-align: left;
+        padding: 8px 0;
+        font-size: 12px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .transactions-table td {
+        padding: 8px 0;
+        font-size: 14px;
+        color: #1f2937;
+    }
+</style>
+</head>
+<body>
+<div class="invoice-container">
+    <!-- Header -->
+    <div class="invoice-header">
+        <table class="header-table">
+            <tr>
+                <td>
+                    <h1 class="invoice-title">Invoice #{{{ invoice_number }}}</h1>
+                </td>
+                <td class="action-buttons">
+                    <span class="btn {{{ invoice_status_class }}}">{{{ invoice_status }}}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Invoice Details -->
+    <div class="invoice-details">
+        <table class="details-table">
+            <tr>
+                <td class="detail-section">
+                    <div class="section-header"><span class="section-icon"></span>ISSUED TO</div>
+                    <div class="section-content">
+                        <h3>{{{ customer_name }}}</h3>
+                        <p>{{{ customer_address }}}</p>
+                        <p>{{{ customer_city }}}</p>
+                        <p>{{{ customer_state }}}</p>
+                        <p>{{{ customer_zip }}}</p>
+                        <p>{{{ customer_country }}}</p>
+                    </div>
+                </td>
+                <td class="detail-section">
+                    <div class="section-header"><span class="section-icon"></span>BILL TO</div>
+                    <div class="section-content">
+                        <h3>{{{ company_name }}}</h3>
+                        <p>{{{ company_address }}}</p>
+                        <p>{{{ company_address2 }}}</p>
+                        <p>{{{ company_zip }}} {{{ company_city }}}</p>
+                        <p>{{{ company_state }}} {{{ company_country }}}</p>
+                    </div>
+                </td>
+                <td class="detail-section">
+                    <div class="section-header"><span class="section-icon"></span>INVOICE DETAILS</div>
+                    <div class="section-content">
+                        <p><strong>Invoice Date:</strong> {{{ invoice_date }}}</p>
+                        <p><strong>Invoice No:</strong> #{{{ invoice_number }}}</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Invoice Items -->
+    <div class="invoice-items" style="padding:0 32px 32px;">
+        <div class="items-header"><span class="section-icon"></span>Invoice Items</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th class="text-right">PRICE</th>
+                    <th class="text-right">QUANTITY</th>
+                    <th class="text-right">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{{ invoice_items }}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-section">
+        <table width="100%">
+            <tr class="summary-row">
+                <td>SUBTOTAL</td>
+                                        <td class="text-right">{{{ complete_subtotal }}}</td>
+            </tr>
+            <tr class="summary-row">
+                <td>GST</td>
+                                        <td class="text-right">{{{ complete_tax }}}</td>
+            </tr>
+            <tr class="summary-row total">
+                <td>TOTAL</td>
+                <td class="text-right">{{{ complete_total }}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Transactions -->
+    <div class="transactions">
+        <div class="transactions-header"><span class="section-icon"></span>Transactions</div>
+        <table class="transactions-table">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>TRANSACTION ID</th>
+                    <th>GATEWAY</th>
+                    <th class="text-right">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{{ invoice_transactions }}}
+                </tbody>
+            </table>
+        </div>
+</div>
+</body>
+</html>

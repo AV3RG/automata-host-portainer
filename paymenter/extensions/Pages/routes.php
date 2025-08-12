@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Paymenter\Extensions\Others\Pages\Livewire\Page;
 use Paymenter\Extensions\Others\Pages\Models\Page as ModelsPage;
 
+
 // Register custom routes for pages
 Route::middleware('web')->group(function () {
     // Get all pages with custom routes
@@ -22,3 +23,5 @@ Route::middleware('web')->group(function () {
 
 // Fallback route for pages without custom routes (using slug)
 Route::fallback(Page::class)->middleware('web')->name('extensions.others.pages');
+
+

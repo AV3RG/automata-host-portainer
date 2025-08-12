@@ -1,3 +1,5 @@
+
+
 <div class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
 
     <div @if ($checkPayment) wire:poll="checkPaymentStatus" @endif>
@@ -24,7 +26,7 @@
         <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl opacity-60"></div>
         <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-gradient-to-tr from-primary/8 via-primary/4 to-transparent rounded-full blur-2xl opacity-40"></div>
         
-        <div class="relative z-10 p-8 lg:p-12">
+        <div class="relative z-10 p-8 lg:p-12 invoice-container">
             
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12">
                 <div class="mb-6 lg:mb-0">
@@ -46,7 +48,7 @@
                         </div>
                     @endif
                     
-                    <button wire:click="downloadPDF" class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary/80 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+                    <button onclick="downloadInvoiceAsPDF()" class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary/80 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
                         <x-ri-download-line class="size-5 transition-transform group-hover:scale-110" />
                         <span>Download</span>
                     </button>
@@ -298,3 +300,78 @@
         </div>
     </div>
 </div>
+
+<script>
+function downloadInvoiceAsPDF() {
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = `
+        <x-ri-loader-5-fill class="size-5 animate-spin" />
+        <span>Generating PDF...</span>
+    `;
+    button.disabled = true;
+    
+    // Show loading message
+    const loadingMessage = document.createElement('div');
+    loadingMessage.className = 'fixed top-4 right-4 bg-primary text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    loadingMessage.innerHTML = 'Generating PDF... Please wait.';
+    document.body.appendChild(loadingMessage);
+    
+    // Call backend extension to generate PDF
+    fetch('/invoices/download-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/pdf'
+        },
+        body: JSON.stringify({
+            invoice_id: '{{ $invoice->id }}'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('PDF generation failed');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'invoice-{{ $invoice->number }}.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(error => {
+        console.error('Error generating PDF:', error);
+        
+        // Show error message
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        errorMessage.innerHTML = 'Failed to generate PDF. Please try again.';
+        document.body.appendChild(errorMessage);
+        
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+            if (errorMessage.parentNode) {
+                document.body.removeChild(errorMessage);
+            }
+        }, 5000);
+    })
+    .finally(() => {
+        // Restore button state
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        
+        // Remove loading message
+        if (loadingMessage.parentNode) {
+            document.body.removeChild(loadingMessage);
+        }
+    });
+}
+</script>

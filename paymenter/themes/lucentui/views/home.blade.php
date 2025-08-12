@@ -322,8 +322,8 @@
                 <!-- Testimonial 1 -->
                 <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-primary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-primary/40">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-white font-bold">{{ substr(theme('testimonial_1_name', 'John Doe'), 0, 1) }}{{ substr(explode(' ', theme('testimonial_1_name', 'John Doe'))[1] ?? '', 0, 1) }}</span>
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
+                            <img src="{{ asset('assets/extended/pratham.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h4 class="font-bold text-color-base">{{ theme('testimonial_1_name', 'John Doe') }}</h4>
@@ -343,8 +343,8 @@
                 <!-- Testimonial 2 -->
                 <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-secondary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-secondary/40">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-white font-bold">{{ substr(theme('testimonial_2_name', 'Sarah Anderson'), 0, 1) }}{{ substr(explode(' ', theme('testimonial_2_name', 'Sarah Anderson'))[1] ?? '', 0, 1) }}</span>
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
+                            <img src="{{ asset('assets/extended/nikit.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h4 class="font-bold text-color-base">{{ theme('testimonial_2_name', 'Sarah Anderson') }}</h4>
@@ -364,8 +364,8 @@
                 <!-- Testimonial 3 -->
                 <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-success/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-success/40">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-white font-bold">{{ substr(theme('testimonial_3_name', 'Mike Rodriguez'), 0, 1) }}{{ substr(explode(' ', theme('testimonial_3_name', 'Mike Rodriguez'))[1] ?? '', 0, 1) }}</span>
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
+                            <img src="{{ asset('assets/extended/nishkarsh.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h4 class="font-bold text-color-base">{{ theme('testimonial_3_name', 'Sarah Anderson') }}</h4>

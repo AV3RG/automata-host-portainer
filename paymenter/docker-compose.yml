@@ -22,6 +22,26 @@ services:
     image: redis:alpine
     restart: always
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - "${PHPMYADMIN_PORT:-8081}:80"
+    environment:
+      PMA_HOST: "database"
+      PMA_PORT: "3306"
+      PMA_ARBITRARY: "0"
+      # Optional tuning
+      UPLOAD_LIMIT: "64M"
+      MEMORY_LIMIT: "256M"
+    depends_on:
+      - database
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/", "|", "grep", "phpMyAdmin"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   paymenter:
     # Replaced 'image:' with 'build:' to use our custom Dockerfile
     build: .
@@ -44,3 +64,7 @@ services:
       DB_CONNECTION: "mariadb"
       DB_HOST: "database"
       DB_PORT: "3306"
+
+networks:
+  default:
+    driver: bridge

@@ -181,7 +181,116 @@
     @endforeach
 </div>
 
+    <!-- FAQ Section -->
+    @php
+        $faqQuestions = collect();
+        $faqServiceAvailable = false;
+        
+        try {
+            if (class_exists('Paymenter\Extensions\Others\FAQ\FAQService')) {
+                $faqServiceAvailable = true;
+                $faqQuestions = \Paymenter\Extensions\Others\FAQ\FAQService::getQuestionsForCategory($category->id, true);
+            }
+        } catch (Exception $e) {
+            // Silently fail if FAQ service is not available
+        }
+    @endphp
+    
+    @if($faqServiceAvailable && $faqQuestions->count() > 0)
+        <div class="mt-16">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <path d="M12 17h.01"/>
+                    </svg>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-[var(--base)] dark:text-[var(--dark-base)] mb-4">
+                    Frequently Asked Questions
+                </h2>
+                <p class="text-lg text-[var(--muted)] dark:text-[var(--dark-muted)] max-w-2xl mx-auto">
+                    Find answers to common questions about {{ $category->name }} and our services.
+                </p>
+            </div>
 
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-4">
+                    @foreach($faqQuestions as $faq)
+                        <div class="group bg-[var(--background-secondary)]/80 dark:bg-[var(--dark-background-secondary)]/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-[var(--neutral)]/50 dark:border-[var(--dark-neutral)]/50">
+                            <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary/20" 
+                                    onclick="toggleFAQ({{ $faq->id }})"
+                                    aria-expanded="false"
+                                    aria-controls="faq-answer-{{ $faq->id }}">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-[var(--base)] dark:text-[var(--dark-base)] group-hover:text-primary transition-colors duration-300 pr-4">
+                                        {{ $faq->question }}
+                                    </h3>
+                                    <div class="flex items-center gap-3">
+                                        @if($faq->is_featured)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="mr-1">
+                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                                </svg>
+                                                Featured
+                                            </span>
+                                        @endif
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--muted)] dark:text-[var(--dark-muted)] transform transition-transform duration-300 faq-arrow-{{ $faq->id }}">
+                                            <path d="m6 9 6 6 6-6"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <div id="faq-answer-{{ $faq->id }}" 
+                                 class="faq-answer hidden px-6 pb-6 border-t border-[var(--neutral)]/50 dark:border-[var(--dark-neutral)]/50">
+                                <div class="pt-4">
+                                    <article class="prose prose-sm prose-gray dark:prose-invert text-[var(--muted)] dark:text-[var(--dark-muted)] leading-relaxed max-w-none">
+                                        {!! $faq->answer !!}
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleFAQ(faqId) {
+                const answer = document.getElementById(`faq-answer-${faqId}`);
+                const button = document.querySelector(`[onclick="toggleFAQ(${faqId})"]`);
+                const arrow = document.querySelector(`.faq-arrow-${faqId}`);
+                const isExpanded = answer.classList.contains('hidden');
+                
+                // Toggle visibility
+                if (isExpanded) {
+                    answer.classList.remove('hidden');
+                    button.setAttribute('aria-expanded', 'true');
+                    arrow.classList.add('rotate-180');
+                } else {
+                    answer.classList.add('hidden');
+                    button.setAttribute('aria-expanded', 'false');
+                    arrow.classList.remove('rotate-180');
+                }
+            }
+
+            // Initialize FAQ accessibility
+            document.addEventListener('DOMContentLoaded', function() {
+                const faqButtons = document.querySelectorAll('[onclick^="toggleFAQ"]');
+                faqButtons.forEach(button => {
+                    button.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            const faqId = this.getAttribute('onclick').match(/\d+/)[0];
+                            toggleFAQ(faqId);
+                        }
+                    });
+                });
+            });
+        </script>
+    @endif
+@endif
 
 <style>
 :root {

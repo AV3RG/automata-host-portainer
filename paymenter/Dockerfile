@@ -8,6 +8,7 @@ COPY extensions/Razorpay-Paymenter /app/extensions/Gateways/Razorpay
 COPY themes /app/themes
 COPY extensions/Pelican /app/extensions/Servers/Pelican
 COPY extensions/Pages /app/extensions/Others/Pages
+COPY extensions/FAQ /app/extensions/Others/FAQ
 
 # Set proper permissions
 RUN chmod -R 755 /app/themes && \

@@ -475,6 +475,105 @@
         </div>
     </div>
 
+    <!-- FAQ Section -->
+    @php
+        $featuredFaqs = collect();
+        $faqServiceAvailable = false;
+        
+        try {
+            if (class_exists('Paymenter\Extensions\Others\FAQ\FAQService')) {
+                $faqServiceAvailable = true;
+                $featuredFaqs = \Paymenter\Extensions\Others\FAQ\FAQService::getAllFeaturedQuestions();
+            }
+        } catch (Exception $e) {
+            // Silently fail if FAQ service is not available
+        }
+    @endphp
+    
+    @if($faqServiceAvailable && $featuredFaqs->count() > 0)
+            <div class="py-20">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-bold text-color-base mb-6">
+                            {{ theme('faq_title', 'Frequently Asked Questions') }}
+                        </h2>
+                        <p class="text-xl text-color-muted max-w-2xl mx-auto">
+                            {{ theme('faq_subtitle', 'Find answers to common questions about our services') }}
+                        </p>
+                    </div>
+
+                    <div class="max-w-4xl mx-auto">
+                        <div class="space-y-4">
+                            @foreach($featuredFaqs as $faq)
+                                <div class="group bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border border-neutral/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary/20" 
+                                            onclick="toggleHomeFAQ({{ $faq->id }})"
+                                            aria-expanded="false"
+                                            aria-controls="home-faq-answer-{{ $faq->id }}">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-lg font-semibold text-color-base group-hover:text-primary transition-colors duration-300 pr-4">
+                                                {{ $faq->question }}
+                                            </h3>
+                                            <div class="flex items-center gap-3">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                                    <x-ri-star-fill class="size-3 mr-1" />
+                                                    Featured
+                                                </span>
+                                                <x-ri-arrow-down-s-line class="size-5 text-color-muted transform transition-transform duration-300 home-faq-arrow-{{ $faq->id }}" />
+                                            </div>
+                                        </div>
+                                    </button>
+                                    
+                                    <div id="home-faq-answer-{{ $faq->id }}" 
+                                         class="home-faq-answer hidden px-6 pb-6 border-t border-neutral/50">
+                                        <div class="pt-4">
+                                            <article class="prose dark:prose-invert text-color-muted leading-relaxed max-w-none">
+                                                {!! $faq->answer !!}
+                                            </article>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function toggleHomeFAQ(faqId) {
+                    const answer = document.getElementById(`home-faq-answer-${faqId}`);
+                    const button = document.querySelector(`[onclick="toggleHomeFAQ(${faqId})"]`);
+                    const arrow = document.querySelector(`.home-faq-arrow-${faqId}`);
+                    const isExpanded = answer.classList.contains('hidden');
+                    
+                    // Toggle visibility
+                    if (isExpanded) {
+                        answer.classList.remove('hidden');
+                        button.setAttribute('aria-expanded', 'true');
+                        arrow.classList.add('rotate-180');
+                    } else {
+                        answer.classList.add('hidden');
+                        button.setAttribute('aria-expanded', 'false');
+                        arrow.classList.remove('rotate-180');
+                    }
+                }
+
+                // Initialize FAQ accessibility
+                document.addEventListener('DOMContentLoaded', function() {
+                    const faqButtons = document.querySelectorAll('[onclick^="toggleHomeFAQ"]');
+                    faqButtons.forEach(button => {
+                        button.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                const faqId = this.getAttribute('onclick').match(/\d+/)[0];
+                                toggleHomeFAQ(faqId);
+                            }
+                        });
+                    });
+                });
+            </script>
+        @endif
+
     <div class="mt-16 mb-8">
         {!! hook('pages.home') !!}
     </div>

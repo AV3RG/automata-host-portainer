@@ -588,4 +588,237 @@
             </div>
         </div>
     </div>
+
+    <!-- FAQ Section -->
+    @php
+        $faqQuestions = collect();
+        $faqServiceAvailable = false;
+        $debugInfo = [];
+        
+        try {
+            // Test 1: Check if extension directory exists
+            $extensionPath = base_path('extensions/Others/FAQ');
+            $debugInfo[] = 'Extension path exists: ' . (is_dir($extensionPath) ? 'Yes' : 'No');
+            
+            // Test 2: Check if FAQService class exists
+            if (class_exists('Paymenter\Extensions\Others\FAQ\FAQService')) {
+                $faqServiceAvailable = true;
+                $debugInfo[] = 'FAQService class found';
+                
+                // Test 3: Check if FAQQuestion model exists
+                if (class_exists('Paymenter\Extensions\Others\FAQ\Models\FAQQuestion')) {
+                    $debugInfo[] = 'FAQQuestion model found';
+                    
+                    // Test 4: Check if table exists
+                    try {
+                        $tableExists = \Schema::hasTable('ext_faq_questions');
+                        $debugInfo[] = 'Table ext_faq_questions exists: ' . ($tableExists ? 'Yes' : 'No');
+                        
+                        if ($tableExists) {
+                            // Test 5: Try to get questions
+                            try {
+                                $faqQuestions = \Paymenter\Extensions\Others\FAQ\FAQService::getQuestionsForCategory($category->id, true);
+                                $debugInfo[] = 'Questions retrieved: ' . $faqQuestions->count();
+                            } catch (Exception $e) {
+                                $debugInfo[] = 'Error getting questions: ' . $e->getMessage();
+                            }
+                        }
+                    } catch (Exception $e) {
+                        $debugInfo[] = 'Error checking table: ' . $e->getMessage();
+                    }
+                } else {
+                    $debugInfo[] = 'FAQQuestion model not found';
+                }
+            } else {
+                $debugInfo[] = 'FAQService class not found';
+            }
+            
+            // Test 6: Check if extension is enabled in Paymenter
+            try {
+                $extensions = app('extensions') ?? collect();
+                $faqExtension = $extensions->first(function($ext) {
+                    return str_contains(get_class($ext), 'FAQ');
+                });
+                $debugInfo[] = 'FAQ Extension enabled: ' . ($faqExtension ? 'Yes' : 'No');
+            } catch (Exception $e) {
+                $debugInfo[] = 'Error checking extensions: ' . $e->getMessage();
+            }
+            
+        } catch (Exception $e) {
+            $debugInfo[] = 'Exception: ' . $e->getMessage();
+        }
+    @endphp
+    
+    <!-- FAQ Section -->
+    @if($faqServiceAvailable)
+        @if($faqQuestions->count() > 0)
+            <div class="mt-16">
+                <!-- Debug Info (remove after testing) -->
+                @if(config('app.debug'))
+                    <div class="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-sm">
+                        <strong>Debug Info:</strong><br>
+                        FAQ Service Available: {{ $faqServiceAvailable ? 'Yes' : 'No' }}<br>
+                        FAQ Questions Count: {{ $faqQuestions->count() }}<br>
+                        Category ID: {{ $category->id }}<br>
+                        <strong>Debug Steps:</strong><br>
+                        @foreach($debugInfo as $info)
+                            • {{ $info }}<br>
+                        @endforeach
+                        <strong>FAQ Questions:</strong><br>
+                        <pre>{{ $faqQuestions->toJson(JSON_PRETTY_PRINT) }}</pre>
+                    </div>
+                @endif
+                
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 text-primary rounded-full mb-4">
+                        <x-ri-question-line class="size-8" />
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-color-base mb-4">
+                        Frequently Asked Questions
+                    </h2>
+                    <p class="text-lg text-color-muted max-w-2xl mx-auto">
+                        Find answers to common questions about {{ $category->name }} and our services.
+                    </p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="space-y-4">
+                        @foreach($faqQuestions as $faq)
+                            <div class="group bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border border-neutral/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                                <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary/20" 
+                                        onclick="toggleFAQ({{ $faq->id }})"
+                                        aria-expanded="false"
+                                        aria-controls="faq-answer-{{ $faq->id }}">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-color-base group-hover:text-primary transition-colors duration-300 pr-4">
+                                            {{ $faq->question }}
+                                        </h3>
+                                        <div class="flex items-center gap-3">
+                                            @if($faq->is_featured)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                                    <x-ri-star-fill class="size-3 mr-1" />
+                                                    Featured
+                                                </span>
+                                            @endif
+                                            <x-ri-arrow-down-s-line class="size-5 text-color-muted transform transition-transform duration-300 faq-arrow-{{ $faq->id }}" />
+                                        </div>
+                                    </div>
+                                </button>
+                                
+                                <div id="faq-answer-{{ $faq->id }}" 
+                                     class="faq-answer overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0 px-0 pb-0 border-t-0 transform origin-top border-neutral/50">
+                                    <div class="pt-4 px-6 pb-6 transform transition-transform duration-300">
+                                        <article class="prose dark:prose-invert text-color-muted leading-relaxed max-w-none">
+                                            {!! $faq->answer !!}
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <script>
+                    function toggleFAQ(faqId) {
+                        const answer = document.getElementById(`faq-answer-${faqId}`);
+                        const button = document.querySelector(`[onclick="toggleFAQ(${faqId})"]`);
+                        const arrow = document.querySelector(`.faq-arrow-${faqId}`);
+                        const content = answer.querySelector('.pt-4');
+                        const isExpanded = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+
+                        // Toggle visibility with smooth animation
+                        if (!isExpanded) {
+                            // Expand
+                            answer.style.maxHeight = answer.scrollHeight + 'px';
+                            answer.style.opacity = '1';
+                            answer.style.paddingLeft = '1.5rem';
+                            answer.style.paddingRight = '1.5rem';
+                            answer.style.paddingBottom = '1.5rem';
+                            answer.style.borderTopWidth = '1px';
+                            content.style.transform = 'scaleY(1)';
+                            button.setAttribute('aria-expanded', 'true');
+                            arrow.classList.add('rotate-180');
+                        } else {
+                            // Collapse
+                            answer.style.maxHeight = '0px';
+                            answer.style.opacity = '0';
+                            answer.style.paddingLeft = '0';
+                            answer.style.paddingRight = '0';
+                            answer.style.paddingBottom = '0';
+                            answer.style.borderTopWidth = '0px';
+                            content.style.transform = 'scaleY(0.95)';
+                            button.setAttribute('aria-expanded', 'false');
+                            arrow.classList.remove('rotate-180');
+                        }
+                    }
+
+                    // Initialize FAQ accessibility
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const faqButtons = document.querySelectorAll('[onclick^="toggleFAQ"]');
+                        faqButtons.forEach(button => {
+                            button.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    const faqId = this.getAttribute('onclick').match(/\d+/)[0];
+                                    toggleFAQ(faqId);
+                                }
+                            });
+                        });
+                    });
+                </script>
+            </div>
+        @else
+            <!-- No FAQs available -->
+            @if(config('app.debug'))
+                <div class="mt-16">
+                    <div class="text-center mb-12">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 text-gray-400 rounded-full mb-4">
+                            <x-ri-question-line class="size-8" />
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-400 mb-4">
+                            No FAQ Questions Available
+                        </h2>
+                        <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+                            No FAQ questions have been added for {{ $category->name }} yet.
+                        </p>
+                        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                            <strong>Debug Info:</strong><br>
+                            FAQ Service Available: {{ $faqServiceAvailable ? 'Yes' : 'No' }}<br>
+                            FAQ Questions Count: {{ $faqQuestions->count() }}<br>
+                            Category ID: {{ $category->id }}<br>
+                            <strong>Debug Steps:</strong><br>
+                            @foreach($debugInfo as $info)
+                                • {{ $info }}<br>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endif
+    @else
+        <!-- FAQ Service not available -->
+        @if(config('app.debug'))
+            <div class="mt-16">
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 text-red-400 rounded-full mb-4">
+                        <x-ri-error-warning-line class="size-8" />
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-red-400 mb-4">
+                        FAQ Service Not Available
+                    </h2>
+                    <p class="text-lg text-red-500 max-w-2xl mx-auto">
+                        The FAQ extension is not properly loaded or configured.
+                    </p>
+                    <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                        <strong>Debug Info:</strong><br>
+                        FAQ Service Available: {{ $faqServiceAvailable ? 'Yes' : 'No' }}<br>
+                        <strong>Debug Steps:</strong><br>
+                        @foreach($debugInfo as $info)
+                            • {{ $info }}<br>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endif
 </div>

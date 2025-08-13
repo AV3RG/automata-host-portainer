@@ -2,33 +2,54 @@
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 @endassets
 
-<div id="cf-turnstile"></div>
+<div id="cf-turnstile" style="width: 100%; display: flex; justify-content: center;"></div>
 
 <script>
+    let turnstileWidgetId = null;
+
     function renderTurnstile() {
         const isDarkMode = localStorage.getItem('_x_darkMode') === 'true';
         const theme = isDarkMode ? 'dark' : 'light';
 
-        turnstile.render('#cf-turnstile', {
+        const containerWidth =
+            document.getElementById('cf-turnstile').getBoundingClientRect().width;
+        const size = containerWidth < 300 ? 'compact' : 'normal';
+
+        // If already rendered, reset instead of re-render
+        if (turnstileWidgetId !== null) {
+            turnstile.reset(turnstileWidgetId);
+            return;
+        }
+
+        turnstileWidgetId = turnstile.render('#cf-turnstile', {
             sitekey: '{{ config('settings.captcha_site_key') }}',
-            size: 'flexible',
+            size: size,
             theme: theme,
-            callback: token => @this.set('captcha', token, false),
+            callback: (token) => @this.set('captcha', token, false),
         });
     }
 
     document.addEventListener('livewire:initialized', () => {
-        // On livewire validation error reset captcha
         Livewire.hook('request', ({ succeed }) => {
             succeed(() => {
-                turnstile.reset();
+                if (turnstileWidgetId !== null) {
+                    turnstile.reset(turnstileWidgetId);
+                }
             });
-        })
+        });
     });
-</script>
 
-@script
-<script>
-    renderTurnstile();
+    // Define waitForWidthAndRender in the same script block
+    function waitForWidthAndRender() {
+        const el = document.getElementById('cf-turnstile');
+        const width = el.getBoundingClientRect().width;
+
+        if (width > 0) {
+            renderTurnstile();
+        } else {
+            requestAnimationFrame(waitForWidthAndRender);
+        }
+    }
+
+    waitForWidthAndRender();
 </script>
-@endscript

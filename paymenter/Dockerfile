@@ -1,6 +1,8 @@
 # Use the official Paymenter image as the base
 FROM ghcr.io/paymenter/paymenter:v1.2.8
 
+RUN composer require razorpay/razorpay:^2.9
+
 # Copy our enhanced Razorpay extension with subscription support
 COPY extensions/Razorpay-Paymenter /app/extensions/Gateways/Razorpay
 

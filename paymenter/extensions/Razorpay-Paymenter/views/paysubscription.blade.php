@@ -10,19 +10,16 @@
         name: "{{ config('app.name', 'Paymenter') }}",
         description: "{{ $subscriptionDetails['description'] ?? 'Subscription' }}",
         currency: "INR",
-        callback_url: "{{ route('extensions.gateways.razorpay.callback', ['invoiceId' => $invoiceId]) }}",
+        callback_url: "{{ route('extensions.gateways.razorpay.callback', ['invoiceNumber' => $invoiceNumber]) }}",
         modal: {
             ondismiss: function() {
-                window.location.href = "{{ route('extensions.gateways.razorpay.cancel', ['invoiceId' => $invoiceId]) }}";
+                window.location.href = "{{ route('extensions.gateways.razorpay.cancel', ['invoiceNumber' => $invoiceNumber]) }}";
             }
         },
-        prefill: {
-            email: "{{ auth()->user()->email ?? '' }}",
-            contact: "{{ auth()->user()->phone ?? '' }}",
-        },
         notes: {
-            invoice_id: "{{ $invoiceId }}",
-            subscription_id: "{{ $subscriptionId }}",
+            invoiceId: "{{ $invoiceId }}",
+            invoiceNumber: "{{ $invoiceNumber }}",
+            subscriptionId: "{{ $subscriptionId }}",
             type: "subscription"
         }
     };
@@ -53,27 +50,6 @@
                     <p class="text-sm text-gray-500">
                         If you are not redirected automatically, please wait or refresh the page.
                     </p>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Subscription Details</h3>
-                    <div class="space-y-2 text-sm text-gray-600">
-                        <div class="flex justify-between">
-                            <span>Plan:</span>
-                            <span class="font-medium">{{ $subscriptionDetails['description'] ?? 'N/A' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Amount:</span>
-                            <span class="font-medium">₹{{ number_format($subscriptionDetails['amount'] ?? 0, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Billing Cycle:</span>
-                            <span class="font-medium">
-                                Every {{ $subscriptionDetails['billing_period'] ?? 1 }} 
-                                {{ Str::plural($subscriptionDetails['billing_unit'] ?? 'month', $subscriptionDetails['billing_period'] ?? 1) }}
-                            </span>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="text-center">

@@ -60,12 +60,10 @@ class RazorpayUtils {
     public static function planDetailsGenerator($invoice, $total)
     {
         return [
-            'name' => "v1-" . $invoice->id . "-" . $invoice->items->first()->reference->plan->billing_unit . "-" . $invoice->items->first()->reference->plan->billing_period . "-" . $total,
+            'name' => "v1-" . "-" . $invoice->items->first()->reference->plan->billing_unit . "-" . $invoice->items->first()->reference->plan->billing_period . "-" . $total,
             'amount' => $total * 100,
             'currency' => $invoice->currency->code,
-            'description' => "Invoice id: " . $invoice->id . " - Item Ids: " . $invoice->items->map(function ($item) {
-                return $item->reference->id;
-            })->implode(', ')
+            'description' => ''
         ];
     }
 

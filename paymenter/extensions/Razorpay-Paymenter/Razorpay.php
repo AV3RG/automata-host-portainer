@@ -41,6 +41,7 @@ class Razorpay extends Gateway
 //        });
 
         Event::listen(Created::class, function (Created $event) {
+            \Log::info("Service cancellation event received", ['event' => $event]);
             $service = $event->cancellation->service;
             if ($service->properties->where('key', 'has_razorpay_subscription')->first()?->value !== '1' || !$service->subscription_id) {
                 // If the service is not a stripe subscription, skip
@@ -214,7 +215,7 @@ class Razorpay extends Gateway
     public function webhook(Request $request)
     {
 
-        \Log::info('Razorpay webhook received', ['payload' => $request->getContent()]);
+//        \Log::info('Razorpay webhook received', ['payload' => $request->getContent()]);
 
         try {
             $this->getApi()->utility->verifyWebhookSignature(
@@ -237,10 +238,13 @@ class Razorpay extends Gateway
                 $subscriptionEntity = $payload->payload->subscription->entity; // contains a RazorpaySubscription
                 $paymentEntity = $payload->payload->payment->entity; // contains a RazorpayPayment
                 WebhookUtils::onCharged($subscriptionEntity, $paymentEntity);
+                break;
             case 'subscription.cancelled':
                 $subscriptionEntity = $payload->payload->subscription->entity;
                 WebhookUtils::onCancelled($subscriptionEntity);
+                break;
             default:
+
                 // Not a event type we care about, just return 200
         }
 
@@ -358,15 +362,23 @@ class Razorpay extends Gateway
     public function cancelSubscription(Service $service, Created $event)
     {
         if (!$service->subscription_id && !$service->properties->where('key', 'has_razorpay_subscription')->first()) {
+            \Log::info("Service does not have a Razorpay subscription, skipping cancellation.");
             return;
         }
 
-        $cycle_end = $event->type === 'end_of_period';
+        $cycle_end = $event->cancellation->type === 'end_of_period';
 
-        $this->getApi()->subscription->fetch($service->subscription_id)->cancel([
-            'cancel_at_cycle_end' => $cycle_end,
-        ]);
+        try {
+            $this->getApi()->subscription->fetch($service->subscription_id)->cancel([
+                'cancel_at_cycle_end' => $cycle_end,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Failed to cancel Razorpay subscription: " . $e->getMessage());
+            // Optionally, you can throw the exception or handle it as needed
+            return false;
+        }
 
+        \Log::info('Razorpay subscription cancelled for service ID: ' . $service->id);
         $service->update(['subscription_id' => null]);
         // Remove has_stripe_subscription property
         $service->properties()->where('key', 'has_stripe_subscription')->delete();

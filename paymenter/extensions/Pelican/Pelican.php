@@ -32,6 +32,14 @@ class Pelican extends Server
                 'required' => true,
                 'encrypted' => true,
             ],
+            [
+                'name' => 'mini_allocation_api_key',
+                'label' => 'Mini Allocation API Key',
+                'type' => 'text',
+                'description' => 'API Key for the Mini Allocation API. This is used to fetch allocations for the server.',
+                'required' => true,
+                'encrypted' => true,
+            ]
         ];
     }
 
@@ -525,6 +533,18 @@ class Pelican extends Server
         return $response['attributes']['id'] ?? false;
     }
 
+    private function getPrimaryAllocation($id)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->config('mini_allocation_api_key'),
+        ])->get('https://allocation.helper.automata.host/primary_allocation/' . $id);
+        \Log::info('Pelican: Primary allocation response: ' . $response->body());
+        if (!$response->successful()) {
+            return null;
+        }
+        return $response->body();
+    }
+
     public function suspendServer(Service $service, $settings, $properties)
     {
         $server = $this->getServer($service->id);
@@ -610,12 +630,19 @@ class Pelican extends Server
     {
         $server = $this->getServer($service->id, raw: true);
 
+        $primaryAllocation = $this->getPrimaryAllocation($server['attributes']['identifier']);
+
         return [
             [
                 'type' => 'button',
                 'label' => 'Go to server',
                 'url' => $this->config('host') . '/server/' . $server['attributes']['id'],
             ],
+            [
+                'type' => 'button',
+                'label' => 'Go to N8N',
+                'url' => 'https://' . $primaryAllocation
+            ]
         ];
     }
 

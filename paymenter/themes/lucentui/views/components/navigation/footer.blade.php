@@ -6,7 +6,7 @@
                     <div class="p-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl border border-neutral/20">
                         <x-logo class="h-4 w-auto" />
                     </div>
-                    <h3 class="text-lg font-bold text-base">{{ config('app.name') }}</h3>
+                    <h3 class="text-lg font-bold text-base">Automata Host</h3>
                 </div>
 
                 <div class="prose prose-sm text-base/70 prose-headings:text-base prose-p:text-base/60 prose-a:text-primary hover:prose-a:text-primary/80 prose-a:no-underline hover:prose-a:underline">
@@ -17,7 +17,6 @@
                 <div class="text-xs text-base/50">
                     {{ __('© :year :app_name. | All rights reserved.', ['year' => date('Y'), 'app_name' => config('app.name')]) }}
                 </div>
-                <span style="display:none;">Darren_14</span>
             </div>
 
             <div class="flex flex-col lg:items-end gap-4">

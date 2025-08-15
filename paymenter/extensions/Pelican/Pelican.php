@@ -575,7 +575,7 @@ class Pelican extends Server
 
         $this->request('/api/application/servers/' . $server['attributes']['id'] . '/build', 'patch', $updateServerData);
 
-        $eggData = $this->request('/api/application/nests/' . $settings['nest_id'] . '/eggs/' . $settings['egg_id'], data: ['include' => 'variables']);
+        $eggData = $this->request('/api/application/eggs/' . $settings['egg_id'], data: ['include' => 'variables']);
 
         if (!isset($eggData['attributes'])) {
             throw new \Exception('Could not fetch egg data');

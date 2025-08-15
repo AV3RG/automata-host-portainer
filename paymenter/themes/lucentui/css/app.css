@@ -544,11 +544,19 @@ x-navigation-link svg {
     border: 2px solid transparent;
     border-top-color: currentColor;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin-fixed 1s linear infinite !important;
+    transform-origin: center center !important;
 }
 
 @keyframes spin {
+    from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* Ensure the original spin animation also works correctly */
+.original-spin {
+    animation: spin 1s linear infinite;
+    transform-origin: center center;
 }
 
 /* =============================================================================
@@ -612,6 +620,80 @@ x-navigation-link svg {
     .particle {
         display: none;
     }
+}
+
+/* =============================================================================
+   LOADING SPINNER FIXES - HIGH SPECIFICITY OVERRIDES
+   ============================================================================= */
+
+/* Override Tailwind's animate-spin with higher specificity */
+html body .animate-spin,
+html body [class*="animate-spin"],
+html body .ri-loader-5-fill,
+html body .ri-loader-4-fill,
+html body .loading-spinner {
+    transform-origin: center center !important;
+    animation: spin-fixed 1s linear infinite !important;
+}
+
+/* Ensure proper rotation for all loading elements */
+html body .btn-loading::after,
+html body .loading-spinner,
+html body .animate-spin {
+    transform-origin: center center !important;
+}
+
+/* Override any conflicting transforms */
+html body .animate-spin *,
+html body [class*="animate-spin"] * {
+    transform-origin: center center !important;
+}
+
+/* Specific fixes for common loading spinner patterns */
+html body .border-t-blue-500.animate-spin,
+html body .border-t-blue-500[class*="animate-spin"] {
+    transform-origin: center center !important;
+    animation: spin-fixed 1s linear infinite !important;
+}
+
+/* Fix for SVG loading icons */
+html body svg.animate-spin,
+html body svg[class*="animate-spin"] {
+    transform-origin: center center !important;
+    animation: spin-fixed 1s linear infinite !important;
+}
+
+/* Ensure no conflicting transforms on loading elements */
+html body .btn-loading,
+html body .btn-loading *,
+html body .animate-spin,
+html body .animate-spin * {
+    transform-style: preserve-3d !important;
+}
+
+/* Force override for any conflicting animations */
+html body *[class*="animate-spin"] {
+    animation: spin-fixed 1s linear infinite !important;
+    transform-origin: center center !important;
+}
+
+/* Specific fix for loading components */
+html body [role="status"] .animate-spin,
+html body [role="status"] [class*="animate-spin"] {
+    animation: spin-fixed 1s linear infinite !important;
+    transform-origin: center center !important;
+}
+
+/* Fix for any nested loading elements */
+html body .loading-container .animate-spin,
+html body .loading-container [class*="animate-spin"] {
+    animation: spin-fixed 1s linear infinite !important;
+    transform-origin: center center !important;
+}
+
+@keyframes spin-fixed {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* =============================================================================

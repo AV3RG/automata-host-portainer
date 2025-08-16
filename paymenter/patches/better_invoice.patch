@@ -1,6 +1,6 @@
 --- a/resources/views/pdf/invoice.blade.php
 +++ b/resources/views/pdf/invoice.blade.php
-@@ -1,155 +1,229 @@
+@@ -1,155 +1,239 @@
  <html lang="en">
 -
  <head>
@@ -22,7 +22,7 @@
 -                'Apple Color Emoji',
 -                'Segoe UI Emoji';
 -            font-size: 16px;
-+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
++            font-family: 'DejaVu Sans', Arial, sans-serif;
 +            font-size: 14px;
 +            color: #333;
 +            margin: 0;
@@ -37,6 +37,16 @@
 +            padding: 40px;
 +            border-radius: 8px;
 +            box-shadow: 0 0 10px rgba(0,0,0,0.05);
++        }
++
++        @font-face {
++            font-family: 'DejaVu Sans';
++            src: url('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.ttf') format('truetype');
++            font-weight: normal;
++            font-style: normal;
++        }
++        * {
++            font-family: 'DejaVu Sans', Arial, sans-serif !important;
 +        }
 +
 +        .invoice-header {

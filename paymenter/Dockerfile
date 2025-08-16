@@ -1,5 +1,5 @@
 # Use the official Paymenter image as the base
-FROM ghcr.io/paymenter/paymenter:v1.2.8
+FROM ghcr.io/paymenter/paymenter:v1.2.10
 
 RUN composer require razorpay/razorpay:^2.9
 

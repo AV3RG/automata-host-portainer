@@ -1,13 +1,19 @@
-@assets
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-@endassets
 
 <div id="cf-turnstile" style="width: 100%; display: flex; justify-content: center;"></div>
 
 <script>
-    let turnstileWidgetId = null;
+    // Declare turnstileWidgetId in global scope
+    var turnstileWidgetId = null;
 
     function renderTurnstile() {
+        // Check if turnstile is available
+        if (typeof turnstile === 'undefined') {
+            console.warn('Turnstile not loaded yet, retrying...');
+            setTimeout(renderTurnstile, 100);
+            return;
+        }
+
         const isDarkMode = localStorage.getItem('_x_darkMode') === 'true';
         const theme = isDarkMode ? 'dark' : 'light';
 
@@ -32,7 +38,7 @@
     document.addEventListener('livewire:initialized', () => {
         Livewire.hook('request', ({ succeed }) => {
             succeed(() => {
-                if (turnstileWidgetId !== null) {
+                if (turnstileWidgetId !== null && typeof turnstile !== 'undefined') {
                     turnstile.reset(turnstileWidgetId);
                 }
             });
@@ -51,5 +57,12 @@
         }
     }
 
-    waitForWidthAndRender();
+    // Wait for both the script to load and the DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(waitForWidthAndRender, 100);
+        });
+    } else {
+        setTimeout(waitForWidthAndRender, 100);
+    }
 </script>

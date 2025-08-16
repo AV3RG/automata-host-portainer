@@ -637,11 +637,13 @@ class Pelican extends Server
                 'type' => 'button',
                 'label' => 'Go to server',
                 'url' => $this->config('host') . '/server/' . $server['attributes']['id'],
+                'target' => '_blank',
             ],
             [
                 'type' => 'button',
                 'label' => 'Go to N8N',
-                'url' => 'https://' . $primaryAllocation
+                'url' => 'https://' . $primaryAllocation,
+                'target' => '_blank',
             ]
         ];
     }

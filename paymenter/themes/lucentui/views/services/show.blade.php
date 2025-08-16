@@ -144,12 +144,14 @@
                                     {{ $button['label'] }}
                                 </button>
                             @else
-                                <a href="{{ $button['url'] }}" class="block">
-                                    <button class="group w-full flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-background to-background/80 border border-neutral/30 text-color-base font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:bg-background-secondary">
-                                        <x-ri-link-m class="size-5 transition-transform group-hover:scale-110" />
-                                        {{ $button['label'] }}
-                                    </button>
-                                </a>
+                            <a href="{{ $button['url'] }}" class="block"
+                                @if(!empty($button['target'])) target="{{ $button['target'] }}" @endif
+                                @if(($button['target'] ?? null) === '_blank') rel="noopener noreferrer" @endif>
+                                <button class="group w-full flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-background to-background/80 border border-neutral/30 text-color-base font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:bg-background-secondary">
+                                    <x-ri-link-m class="size-5 transition-transform group-hover:scale-110" />
+                                    {{ $button['label'] }}
+                                </button>
+                            </a>
                             @endif
                         @endforeach
                     </div>

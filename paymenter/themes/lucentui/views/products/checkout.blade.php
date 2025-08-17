@@ -175,7 +175,7 @@
                                 <x-ri-money-dollar-circle-fill class="size-5 text-primary" />
                                 <h4 class="text-lg font-semibold text-color-base">{{ __('product.total_today') }}</h4>
                             </div>
-                            <span class="text-2xl font-bold text-primary">{{ $total }}</span>
+                            <span class="text-2xl font-bold text-primary gtag-item-price-tag">{{ $total }}</span>
                         </div>
 
                         @if ($total->setup_fee && $plan->type == 'recurring')
@@ -196,11 +196,11 @@
                     @if (($product->stock > 0 || !$product->stock) && $product->price()->available)
                         <div class="space-y-3">
                             <x-button.primary wire:click="checkout" wire:loading.attr="disabled" 
-                                    class="group/btn w-full inline-flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="group/btn w-full inline-flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed gtag-checkout-button">
                                 <span wire:loading.remove>{{ __('product.checkout') }}</span>
                                 <span wire:loading>Processing...</span>
-                                <x-ri-arrow-right-fill class="size-5 transform transition-transform duration-300 group-hover/btn:translate-x-1" wire:loading.remove />
-                                <x-ri-loader-4-fill class="size-5 animate-spin" wire:loading />
+                                <x-ri-arrow-right-fill class="size-5 transform transition-transform duration-300 group-hover/btn:translate-x-1 gtag-checkout-button" wire:loading.remove />
+                                <x-ri-loader-4-fill class="size-5 animate-spin gtag-checkout-button" wire:loading />
                             </x-button.primary>
                             
                             <div class="flex items-center justify-center gap-2 text-xs text-color-muted">

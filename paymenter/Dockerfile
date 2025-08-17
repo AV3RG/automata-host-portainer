@@ -1,7 +1,7 @@
 # Use the official Paymenter image as the base
 FROM ghcr.io/paymenter/paymenter:v1.2.10
 
-RUN composer require razorpay/razorpay:^2.9
+RUN composer require razorpay/razorpay:^2.9 facebook/php-business-sdk:^18.0 league/iso3166:^4.0
 
 # Copy our enhanced Razorpay extension with subscription support
 COPY extensions/Razorpay-Paymenter /app/extensions/Gateways/Razorpay
@@ -12,6 +12,7 @@ COPY extensions/Pelican /app/extensions/Servers/Pelican
 COPY extensions/Pages /app/extensions/Others/Pages
 COPY extensions/FAQ /app/extensions/Others/FAQ
 COPY extensions/InvoicePDF /app/extensions/Others/InvoicePDF
+COPY extensions/FacebookPixel /app/extensions/Others/FacebookPixel
 
 # Set proper permissions
 RUN chmod -R 755 /app/themes && \

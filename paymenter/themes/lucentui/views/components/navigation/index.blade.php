@@ -44,7 +44,7 @@
                     <div class="hidden md:flex items-center gap-2">
                         <x-dropdown>
                             <x-slot:trigger>
-                                <span class="text-sm font-semibold">{{ strtoupper(app()->getLocale()) }} <span class="text-base/50">|</span> {{ session('currency', config('settings.default_currency')) }}</span>
+                                <span class="text-sm font-semibold">{{ strtoupper(app()->getLocale()) }} <span class="text-base/50">|</span> <span class="gtag-currency">{{ session('currency', config('settings.default_currency')) }}</span></span>
                             </x-slot:trigger>
                             <x-slot:content>
                                 <strong class="block p-2 text-xs font-semibold uppercase text-base/50">Language</strong>

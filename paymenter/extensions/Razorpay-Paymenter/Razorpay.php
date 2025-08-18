@@ -165,8 +165,9 @@ class Razorpay extends Gateway
                 return $item->reference_type === Service::class && $item->reference->plan->type !== 'one-time';
         })->count() == count($invoice->items);
         if ($this->config('razorpay_use_subscriptions') && $eligibleForSubscription) {
-            $razorpayCustomerId = $invoice->user->properties->where('key', 'razorpay_id')->first()->value;
-            if (!isset($razorpayCustomerId)) {
+            $razorpayCustomerProperty = $invoice->user->properties->where('key', 'razorpay_id')->first();
+            $razorpayCustomerId = $razorpayCustomerProperty ? $razorpayCustomerProperty->value : null;
+            if (!$razorpayCustomerId) {
                 $createCustomerResponse = RazorpayUtils::createCustomer($this->getApi(), $invoice);
                 $invoice->user->properties()->updateOrCreate(['key' => 'razorpay_id'], ['value' => $createCustomerResponse->id]);
                 $razorpayCustomerId = $createCustomerResponse->id;

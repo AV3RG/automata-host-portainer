@@ -180,7 +180,8 @@ class Razorpay extends Gateway
             $filteredPlans = array_filter($fetchAllPlans, function ($plan) use ($invoice, $total) {
                 return $plan['amount'] == $total * 100 &&
                        $plan['currency'] == $invoice->currency->code &&
-                       $plan['period'] == RazorpayUtils::convertBillingUnitToRazorpay($invoice->items->first()->reference->plan->billing_period);
+                       $plan['period'] == RazorpayUtils::convertBillingUnitToRazorpay($invoice->items->first()->reference->plan->billing_period) &&
+                       isset($plan['description']);
             });
             $filteredPlans = array_values($filteredPlans);
             $firstPlan = count($filteredPlans) > 0 ? $filteredPlans[0] : null;

@@ -1,0 +1,15 @@
+--- a/app/Models/Product.php
++++ b/app/Models/Product.php
+@@ -9,10 +9,11 @@
+ use Illuminate\Database\Eloquent\Relations\HasMany;
+ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+ use Illuminate\Database\Eloquent\Relations\MorphMany;
++use Paymenter\Extensions\Others\ProductTags\Traits\HasTags;
+ 
+ class Product extends Model
+ {
+-    use HasFactory, HasPlans;
++    use HasFactory, HasPlans, HasTags;
+ 
+     protected $guarded = [];
+ 

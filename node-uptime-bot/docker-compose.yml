@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  uptime-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: uptime-bot
+    restart: unless-stopped
+    environment:
+      # Discord Bot Token
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      # Discord Channel ID
+      - DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}
+      # Discord Guild ID
+      - DISCORD_GUILD_ID=${DISCORD_GUILD_ID}
+      # Discord Initial Message ID
+      - DISCORD_INITIAL_MESSAGE_ID=${DISCORD_INITIAL_MESSAGE_ID}
+      # Pelican API URL
+      - PELICAN_API_URL=${PELICAN_API_URL}
+      # Pelican API Key
+      - PELICAN_API_KEY=${PELICAN_API_KEY}
+      # Timer interval in milliseconds
+      - TIMER_INTERVAL=${TIMER_INTERVAL:-300000}
+      # Node environment
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      # Optional: Mount logs directory if you want to persist logs
+      - ./logs:/app/logs
+    networks:
+      - uptime-bot-network
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Health check passed')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  uptime-bot-network:
+    driver: bridge
+
+volumes:
+  logs:
+    driver: local

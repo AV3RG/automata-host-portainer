@@ -1,4 +1,5 @@
 // Optimized app.js
+import './password-strength';
 const passiveOptions = { passive: true };
 
 document.addEventListener('livewire:init', () => {
@@ -342,6 +343,10 @@ function initializeApp() {
     optimizeForMobile();
     setupErrorHandling();
     setupNetworkHandling();
+    // Ensure password strength indicators initialize on first load as well
+    if (typeof window.initPasswordStrengthIndicators === 'function') {
+        window.initPasswordStrengthIndicators();
+    }
     
     if (performance === 'low') {
         const heavyElements = document.querySelectorAll('.animate-pulse-slowest, .animate-pulse-slow, .animate-pulse-fast');

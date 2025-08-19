@@ -333,15 +333,6 @@
                         <div class="group relative bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 border border-neutral/50 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden animate-fade-in-up" 
                              style="animation-delay: {{ $index * 0.1 }}s;">
                             
-                            <div class="absolute top-4 right-4 z-10">
-                                <div class="flex items-center gap-2 bg-background-secondary/70 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
-                                    <div class="w-2 h-2 {{ $isAvailable ? 'bg-green-500' : 'bg-red-500' }} rounded-full animate-pulse"></div>
-                                    <span class="text-xs font-bold {{ $isAvailable ? 'text-green-600' : 'text-red-600' }} uppercase">
-                                        {{ $isAvailable ? $product->stock . ' in stock' : 'Out of Stock' }}
-                                    </span>
-                                </div>
-                            </div>
-                            
                             @if(theme('small_images', false))
                                 <div class="p-6">
                                     <div class="flex items-start gap-4 mb-4">
@@ -440,13 +431,13 @@
                                     </h3>
                                     
                                     @if(theme('direct_checkout', false) && $product->description)
-                                        <article class="prose dark:prose-invert text-color-muted text-sm mb-4 leading-relaxed">
+                                        <article class="prose dark:prose-invert text-sm mb-4 leading-relaxed">
                                             {!! html_entity_decode($product->description) !!}
                                         </article>
                                     @endif
                                     
                                     <div class="flex items-center justify-between mb-6">
-                                        <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }}">
+                                        <p class="text-2xl font-bold text-primary">
                                             @php
                                                 $availablePlans = $product->availablePlans();
                                                 $monthlyPlan = $availablePlans->first(function($plan) {

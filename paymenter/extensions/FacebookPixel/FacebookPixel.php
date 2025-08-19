@@ -108,7 +108,8 @@ class FacebookPixel extends Extension
         $userData = CapiHelper::buildUserData($user);
         $customData = CapiHelper::buildPurchaseDataForInvoice($invoice);
         $capiEvent = CapiHelper::buildWebsiteEvent('Purchase', $userData, $customData);
-        // CapiHelper::sendEvent($capiEvent, $this->config('pixel_id'));
+        \Log::info("Invoice Paid Event: " . json_encode($capiEvent));
+        CapiHelper::sendEvent($capiEvent, $this->config('pixel_id'));
         \Log::info("Invoice Paid Event sent successfully: " . json_encode($capiEvent));
     }
 

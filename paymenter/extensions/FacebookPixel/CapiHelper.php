@@ -60,8 +60,8 @@ class CapiHelper {
         
         try {
             $user_data = (new UserData());
-            $user_data->setEmails(array(self::hashValue($user->email)));
-            $user_data->setPhones(array(self::hashValue(self::getPropertyValue($user, 'phone'))));
+            $user_data->setEmails(array($user->email));
+            $user_data->setPhones(array(self::getPropertyValue($user, 'phone')));
             $user_data->setLastNames(array($user->last_name));
             $user_data->setFirstNames(array($user->first_name));
             $user_data->setCities(array(self::getPropertyValue($user, 'city')));
@@ -90,7 +90,7 @@ class CapiHelper {
 
     public static function buildPurchaseDataForInvoice($invoice) {
         $customData = (new CustomData());
-        $customData->setValue($invoice->amount);
+        $customData->setValue($invoice->total);
         $customData->setCurrency($invoice->currency->code);
         $customData->setContentType("product");
         $planIds = array();
@@ -138,6 +138,7 @@ class CapiHelper {
 
             $response = $request->execute();
         } catch (\Exception $e) {
+            \Log::error('Failed request data: '. json_encode($request->normalize()));
             throw new \Exception('Failed to send event: ' . $e->getMessage());
         }
     }   

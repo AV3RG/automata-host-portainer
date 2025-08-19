@@ -13,6 +13,7 @@ COPY extensions/Pages /app/extensions/Others/Pages
 COPY extensions/FAQ /app/extensions/Others/FAQ
 COPY extensions/InvoicePDF /app/extensions/Others/InvoicePDF
 COPY extensions/FacebookPixel /app/extensions/Others/FacebookPixel
+COPY extensions/Others/ProductTags /app/extensions/Others/ProductTags
 
 # Set proper permissions
 RUN chmod -R 755 /app/themes && \

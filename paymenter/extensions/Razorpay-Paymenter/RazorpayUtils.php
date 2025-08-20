@@ -57,13 +57,23 @@ class RazorpayUtils {
 
     }
 
+    public static function makeDescription($invoice) {
+        $description = "";
+        foreach ($invoice->items as $item) {
+            $description .= $item->reference->product->name . ", ";
+        }
+        $description = rtrim($description, ", ");
+        return $description;
+    }
+
     public static function planDetailsGenerator($invoice, $total)
     {
+
         return [
             'name' => "v1-" . "-" . $invoice->items->first()->reference->plan->billing_unit . "-" . $invoice->items->first()->reference->plan->billing_period . "-" . $total,
             'amount' => $total * 100,
             'currency' => $invoice->currency->code,
-            'description' => ''
+            'description' => self::makeDescription($invoice)
         ];
     }
 

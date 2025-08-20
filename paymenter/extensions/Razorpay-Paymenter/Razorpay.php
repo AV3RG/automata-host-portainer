@@ -181,14 +181,17 @@ class Razorpay extends Gateway
                 return $plan['amount'] == $total * 100 &&
                        $plan['currency'] == $invoice->currency->code &&
                        $plan['period'] == RazorpayUtils::convertBillingUnitToRazorpay($invoice->items->first()->reference->plan->billing_period) &&
-                       isset($plan['description']);
+                       isset($plan['description']) &&
+                       $plan['description'] === RazorpayUtils::makeDescription($invoice);
             });
             $filteredPlans = array_values($filteredPlans);
             $firstPlan = count($filteredPlans) > 0 ? $filteredPlans[0] : null;
+            $description = $firstPlan ? $firstPlan['description'] : null;
 
             if (!$firstPlan) {
                 // Create plan
                 $firstPlan = RazorpayUtils::createPlan($this->getApi(), $invoice, $total);
+                $description = $firstPlan['item']['description'];
             }
 
             \Log::info("Found plan: " . json_encode($firstPlan));
@@ -202,7 +205,7 @@ class Razorpay extends Gateway
                     'keyId' => $keyId,
                     'subscriptionId' => $subscription->id,
                     'subscriptionDetails' => [
-                        'description' => $firstPlan['description'],
+                        'description' => $description,
                     ],
                     'invoiceId' => $invoice->id,
                     'invoiceNumber' => $invoice->number,

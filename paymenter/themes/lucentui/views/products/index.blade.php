@@ -391,13 +391,13 @@
                                 } catch (Exception $e) {}
                             @endphp
                             @if($isForAgency)
-                                <div class="absolute -top-5 right-3 z-20">
-                                    <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wide shadow-md">
+                                <div class="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
+                                    <div class="px-3 py-1.5 rounded-full bg-purple-500 text-white text-xs font-bold uppercase tracking-wide shadow-md">
                                         {{ __('For Agency') }}
                                     </div>
                                 </div>
                             @endif
-                            <div class="group relative h-full bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 rounded-3xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden {{ $isMostPopular ? 'border-2 border-yellow-400 shadow-lg' : ($isForAgency ? 'border-2 border-primary shadow-lg' : 'border border-neutral/50 shadow-xl') }}">
+                            <div class="group relative h-full bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 rounded-3xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden {{ $isMostPopular ? 'border-2 border-yellow-400 shadow-lg' : ($isForAgency ? 'border-2 border-purple-500 shadow-lg' : 'border border-neutral/50 shadow-xl') }}">
                             
                             @if($isMostPopular)
                                 
@@ -417,8 +417,8 @@
                                     @endif
                                     @if($isForAgency)
                                         <div class="mb-3">
-                                            <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-2.5 py-1 rounded-full shadow">
-                                                <x-ri-building-2-fill class="size-4" />
+                                            <div class="inline-flex items-center gap-2 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 px-2.5 py-1 rounded-full shadow">
+                                                <x-ri-star-fill class="size-4" />
                                                 <span class="text-xs font-semibold uppercase">For Agency</span>
                                             </div>
                                         </div>
@@ -440,7 +440,7 @@
                                                     <span class="ml-2 text-yellow-500">⭐</span>
                                                 @endif
                                                 @if($isForAgency)
-                                                    <span class="ml-2 text-primary text-xs font-semibold uppercase">AGENCY</span>
+                                                    <span class="ml-2 text-purple-500">⭐</span>
                                                 @endif
                                             </h3>
                                             <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }} mb-2">
@@ -526,7 +526,7 @@
                                             <span class="ml-2 text-yellow-500">⭐</span>
                                         @endif
                                         @if($isForAgency)
-                                            <span class="ml-2 text-primary text-xs font-semibold uppercase">AGENCY</span>
+                                            <span class="ml-2 text-purple-500">⭐</span>
                                         @endif
                                     </h3>
                                     

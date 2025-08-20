@@ -619,7 +619,7 @@
                                 <div class="p-6">
                                     <div class="flex items-start gap-4 mb-4">
                                         <div class="flex-shrink-0 relative">
-                                            <img src="{{ asset('assets/extended/n8n_enterprise_graphic.png') }}" alt="Custom Plan"
+                                            <img src="{{ asset('assets/extended/n8n_enterprise_graphic.webp') }}" alt="Custom Plan"
                                                 class="w-20 h-20 object-cover rounded-2xl shadow-lg">
                                         </div>
                                         <div class="flex-1">
@@ -642,7 +642,7 @@
                                 </div>
                             @else
                                 <div class="relative overflow-hidden">
-                                    <img src="{{ asset('assets/extended/n8n_enterprise_graphic.png') }}" alt="Custom Enterprise Plan"
+                                    <img src="{{ asset('assets/extended/n8n_enterprise_graphic.webp') }}" alt="Custom Enterprise Plan"
                                         class="w-full h-56 object-cover">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                 </div>

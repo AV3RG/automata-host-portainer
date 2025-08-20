@@ -417,7 +417,35 @@
                                     </div>
                                 </div>
                             @endif
-                            <div class="group relative h-full bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 rounded-3xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden {{ $isMostPopular ? 'border-2 border-yellow-400 shadow-lg' : 'border border-neutral/50 shadow-xl' }}">
+                            @php
+                                // Check if product has the "for-agency" tag or "for_agency" slug
+                                $isForAgency = false;
+                                $agencySlugs = ['for-agency', 'for_agency'];
+                                try {
+                                    if (method_exists($product, 'hasTag')) {
+                                        foreach ($agencySlugs as $slug) {
+                                            if ($product->hasTag($slug)) { $isForAgency = true; break; }
+                                        }
+                                    } elseif (method_exists($product, 'tags')) {
+                                        $isForAgency = $product->tags()->whereIn('slug', $agencySlugs)->exists();
+                                    } else {
+                                        $isForAgency = \DB::table('ext_product_tag_assignments')
+                                            ->join('ext_product_tags', 'ext_product_tag_assignments.tag_id', '=', 'ext_product_tags.id')
+                                            ->where('ext_product_tag_assignments.product_id', $product->id)
+                                            ->whereIn('ext_product_tags.slug', $agencySlugs)
+                                            ->where('ext_product_tags.is_active', true)
+                                            ->exists();
+                                    }
+                                } catch (Exception $e) {}
+                            @endphp
+                            @if($isForAgency)
+                                <div class="absolute -top-5 right-3 z-20">
+                                    <div class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wide shadow-md">
+                                        {{ __('For Agency') }}
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="group relative h-full bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 rounded-3xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden {{ $isMostPopular ? 'border-2 border-yellow-400 shadow-lg' : ($isForAgency ? 'border-2 border-primary shadow-lg' : 'border border-neutral/50 shadow-xl') }}">
                             
                             @if($isMostPopular)
                                 
@@ -432,6 +460,14 @@
                                             <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 px-2.5 py-1 rounded-full shadow">
                                                 <x-ri-star-fill class="size-4" />
                                                 <span class="text-xs font-semibold uppercase">Most Popular</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if($isForAgency)
+                                        <div class="mb-3">
+                                            <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-2.5 py-1 rounded-full shadow">
+                                                <x-ri-building-2-fill class="size-4" />
+                                                <span class="text-xs font-semibold uppercase">For Agency</span>
                                             </div>
                                         </div>
                                     @endif
@@ -450,6 +486,9 @@
                                                 {{ $product->name }}
                                                 @if($isMostPopular)
                                                     <span class="ml-2 text-yellow-500">⭐</span>
+                                                @endif
+                                                @if($isForAgency)
+                                                    <span class="ml-2 text-primary text-xs font-semibold uppercase">AGENCY</span>
                                                 @endif
                                             </h3>
                                             <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }} mb-2">
@@ -533,6 +572,9 @@
                                         {{ $product->name }}
                                         @if($isMostPopular)
                                             <span class="ml-2 text-yellow-500">⭐</span>
+                                        @endif
+                                        @if($isForAgency)
+                                            <span class="ml-2 text-primary text-xs font-semibold uppercase">AGENCY</span>
                                         @endif
                                     </h3>
                                     

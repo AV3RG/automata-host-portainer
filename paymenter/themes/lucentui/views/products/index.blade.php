@@ -294,7 +294,7 @@
                                         const currencyMatch = yearlyActual.match(/^[^\d]*/);
                                         const currencySymbol = currencyMatch ? currencyMatch[0] : '$';
                                         
-                                        displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${currencySymbol}${monthlyEquivalent} / month</span><br><span class="text-sm text-color-muted">(billed yearly as ${yearlyActual})</span>`;
+                                        displayText = `<span class="line-through text-color-muted text-sm">${monthlyActual}</span><span class="ml-1 text-primary font-bold">${currencySymbol}${monthlyEquivalent} / month</span>`;
                                     } else {
                                         // For monthly, show monthly price
                                         const monthlyActual = monthlyPrice || defaultPrice;

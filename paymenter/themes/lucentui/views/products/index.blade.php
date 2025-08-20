@@ -29,55 +29,7 @@
 
     <div class="grid md:grid-cols-4 gap-8 lg:gap-12">
         
-        <div class="flex flex-col gap-6 col-span-3 md:col-span-1">
-            
-            @if (!$category->image || !theme('show_category_image_banner', true))
-                <div class="group bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border border-neutral/50 rounded-2xl shadow-lg hover:shadow-xl transform transition-all duration-300 overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="bg-primary/10 text-primary p-3 rounded-full shadow-md">
-                                <x-ri-folder-fill class="size-6" />
-                            </div>
-                        </div>
-                        
-                        <h1 class="text-3xl font-bold text-color-base mb-3 group-hover:text-primary transition-colors duration-300">
-                            {{ $category->name }}
-                        </h1>
-                        
-                        @if ($category->description)
-                            <article class="prose dark:prose-invert text-color-muted leading-relaxed">
-                                {!! $category->description !!}
-                            </article>
-                        @endif
-                    </div>
-                </div>
-            @endif
-
-            <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border border-neutral/50 rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 pb-4 border-b border-neutral/50">
-                    <div class="flex items-center justify-center">
-                        <div class="bg-primary/10 text-primary p-3 rounded-full">
-                            <x-ri-list-check-2 class="size-8" />
-                        </div>
-                    </div>
-                </div>
-                
-                <nav class="flex flex-col py-2">
-                    @foreach ($categories as $ccategory)
-                        <a href="{{ route('category.show', ['category' => $ccategory->slug]) }}" wire:navigate
-                            class="group/nav px-6 py-3 text-color-base hover:bg-primary/10 hover:text-primary transition-all duration-300 border-l-4 border-transparent hover:border-primary {{ $category->id == $ccategory->id ? 'font-bold text-primary bg-primary/10 border-primary' : '' }}"
-                            aria-current="{{ $category->id == $ccategory->id ? 'page' : 'false' }}">
-                            <div class="flex items-center justify-between">
-                                <span>{{ $ccategory->name }}</span>
-                                <x-ri-arrow-right-fill class="size-4 transform transition-transform duration-300 group-hover/nav:translate-x-1 opacity-0 group-hover/nav:opacity-100" />
-                            </div>
-                        </a>
-                    @endforeach
-                </nav>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-8 col-span-3">
+        <div class="flex flex-col gap-8 col-span-4">
             
             <!-- Child Categories -->
             @if (count($childCategories) >= 1)
@@ -89,7 +41,7 @@
                         </div>
                     </div>
                     
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         @foreach ($childCategories as $index => $childCategory)
                             @php
                                 $hasImage = !empty($childCategory->image);
@@ -358,7 +310,7 @@
                     </script>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch mt-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch mt-10">
                     @php
                         // Reorder products so in-stock items come first
                         $productsCollection = collect($products);

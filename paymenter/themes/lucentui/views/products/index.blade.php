@@ -252,6 +252,21 @@
                         // Try initialization after a longer delay as fallback
                         setTimeout(attemptInitialization, 500);
                         
+                        // Listen for Livewire page updates
+                        document.addEventListener('livewire:navigated', function() {
+                            setTimeout(() => {
+                                currentBillingPeriod = 'yearly';
+                                updateProductPrices();
+                            }, 100);
+                        });
+                        
+                        // Also listen for any Livewire updates
+                        document.addEventListener('livewire:updated', function() {
+                            setTimeout(() => {
+                                updateProductPrices();
+                            }, 50);
+                        });
+                        
                         function updateProductPrices() {
                             try {
                                 // Update all product prices based on selected billing period

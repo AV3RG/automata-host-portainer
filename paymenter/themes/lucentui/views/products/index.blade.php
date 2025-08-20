@@ -135,6 +135,26 @@
 
             <!-- Products -->
             <div>
+                @php
+                    // Count most popular products (lightweight, without debug)
+                    $mostPopularCount = 0;
+                    foreach ($products as $p) {
+                        try {
+                            if (method_exists($p, 'hasTag') && $p->hasTag('most_popular')) {
+                                $mostPopularCount++;
+                            } elseif (method_exists($p, 'tags')) {
+                                $mostPopularCount += $p->tags()->where('slug', 'most_popular')->exists() ? 1 : 0;
+                            }
+                        } catch (Exception $e) {}
+                    }
+                @endphp
+                @if($mostPopularCount > 0)
+                    <div class="mb-2 text-sm text-color-muted flex items-center gap-2">
+                        <x-ri-star-fill class="size-4 text-yellow-500" />
+                        <span>Highlighted: {{ $mostPopularCount }} {{ Str::plural('product', $mostPopularCount) }}</span>
+                    </div>
+                @endif
+                
                 <div class="flex items-center justify-between mb-6">
                     <div class="hidden md:flex items-center gap-2 text-color-muted">
                         <x-ri-price-tag-3-fill class="size-4" />
@@ -323,18 +343,83 @@
                     </script>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($products as $index => $product)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch mt-10">
+                    @php
+                        // Reorder products so in-stock items come first
+                        $productsCollection = collect($products);
+                        [$inStock, $outOfStock] = $productsCollection->partition(function ($p) {
+                            try {
+                                return ($p->stock !== 0) && $p->price()->available;
+                            } catch (Exception $e) {
+                                return true; // fail open to avoid hiding items
+                            }
+                        });
+                        $sortedProducts = $inStock->concat($outOfStock);
+                    @endphp
+                    @foreach ($sortedProducts as $index => $product)
                         @php
                             // Check if product is available
                             $isAvailable = ($product->stock !== 0) && $product->price()->available;
+                            
+                            // Get product tags for debugging
+                            $productTags = collect();
+                            try {
+                                if (method_exists($product, 'tags')) {
+                                    $productTags = $product->tags()->get();
+                                }
+                            } catch (Exception $e) {
+                                // Silently handle any errors
+                            }
                         @endphp
 
-                        <div class="group relative bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 border border-neutral/50 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden animate-fade-in-up" 
-                             style="animation-delay: {{ $index * 0.1 }}s;">
+                        @php
+                            // Check if product has the "most_popular" tag or "most-popular" slug
+                            $isMostPopular = false;
+                            $popularSlugs = ['most_popular', 'most-popular'];
+                            try {
+                                if (method_exists($product, 'hasTag')) {
+                                    foreach ($popularSlugs as $slug) {
+                                        if ($product->hasTag($slug)) { $isMostPopular = true; break; }
+                                    }
+                                } elseif (method_exists($product, 'tags')) {
+                                    $isMostPopular = $product->tags()->whereIn('slug', $popularSlugs)->exists();
+                                } else {
+                                    $isMostPopular = \DB::table('ext_product_tag_assignments')
+                                        ->join('ext_product_tags', 'ext_product_tag_assignments.tag_id', '=', 'ext_product_tags.id')
+                                        ->where('ext_product_tag_assignments.product_id', $product->id)
+                                        ->whereIn('ext_product_tags.slug', $popularSlugs)
+                                        ->where('ext_product_tags.is_active', true)
+                                        ->exists();
+                                }
+                            } catch (Exception $e) {}
+                        @endphp
+                        
+                        <div class="relative animate-fade-in-up h-full" style="animation-delay: {{ $index * 0.1 }}s;">
+                            @if($isMostPopular)
+                                <div class="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
+                                    <div class="px-3 py-1.5 rounded-full bg-yellow-400 text-white text-xs font-bold uppercase tracking-wide shadow-md">
+                                        {{ __('Most Popular') }}
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="group relative h-full bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 rounded-3xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden {{ $isMostPopular ? 'border-2 border-yellow-400 shadow-lg' : 'border border-neutral/50 shadow-xl' }}">
+                            
+                            @if($isMostPopular)
+                                
+                            @endif
+                            
+                            
                             
                             @if(theme('small_images', false))
                                 <div class="p-6">
+                                    @if($isMostPopular)
+                                        <div class="mb-3">
+                                            <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 px-2.5 py-1 rounded-full shadow">
+                                                <x-ri-star-fill class="size-4" />
+                                                <span class="text-xs font-semibold uppercase">Most Popular</span>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="flex items-start gap-4 mb-4">
                                         @if ($product->image)
                                             <div class="flex-shrink-0 relative">
@@ -346,8 +431,11 @@
                                             </div>
                                         @endif
                                         <div class="flex-1">
-                                            <h3 class="text-xl font-bold text-color-base mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                                            <h3 class="text-xl font-bold {{ $isMostPopular ? 'text-yellow-700 dark:text-yellow-300' : 'text-color-base' }} mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                                                 {{ $product->name }}
+                                                @if($isMostPopular)
+                                                    <span class="ml-2 text-yellow-500">⭐</span>
+                                                @endif
                                             </h3>
                                             <p class="text-2xl font-bold {{ $isAvailable ? 'text-primary' : 'text-color-muted line-through' }} mb-2">
                                                 @php
@@ -426,8 +514,11 @@
                                 @endif
                                 
                                 <div class="p-6">
-                                    <h3 class="text-xl font-bold text-color-base mb-4 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                                    <h3 class="text-xl font-bold {{ $isMostPopular ? 'text-yellow-700 dark:text-yellow-300' : 'text-color-base' }} mb-4 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                                         {{ $product->name }}
+                                        @if($isMostPopular)
+                                            <span class="ml-2 text-yellow-500">⭐</span>
+                                        @endif
                                     </h3>
                                     
                                     @if(theme('direct_checkout', false) && $product->description)
@@ -501,6 +592,7 @@
                             @endif
 
                             <div class="absolute inset-0 bg-gradient-to-br {{ $isAvailable ? 'from-primary/5 to-primary/10' : 'from-red-500/5 to-red-500/10' }} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
                         </div>
                     @endforeach
 
@@ -508,20 +600,11 @@
                     <div class="group relative bg-gradient-to-br from-background-secondary via-background-secondary/90 to-background-secondary/70 border border-neutral/50 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition-all duration-500 overflow-hidden animate-fade-in-up" 
                              style="animation-delay: {{ $index * 0.1 }}s;">
                             
-                            <div class="absolute top-4 right-4 z-10">
-                                <div class="flex items-center gap-2 bg-background-secondary/70 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span class="text-xs font-bold text-green-600 uppercase">
-                                        {{ 'Contact Us' }}
-                                    </span>
-                                </div>
-                            </div>
-                            
                             @if(theme('small_images', false))
                                 <div class="p-6">
                                     <div class="flex items-start gap-4 mb-4">
                                         <div class="flex-shrink-0 relative">
-                                            <img src="{{ asset('images/custom-plan.png') }}" alt="Custom Plan"
+                                            <img src="{{ asset('assets/extended/n8n_enterprise_graphic.png') }}" alt="Custom Plan"
                                                 class="w-20 h-20 object-cover rounded-2xl shadow-lg">
                                         </div>
                                         <div class="flex-1">
@@ -535,7 +618,7 @@
                                     </div>
                                     
                                     <div class="mt-4">
-                                        <a href="https://contactus.com" wire:navigate 
+                                        <a href="https://forms.automata.host/enterprise/form" target="_blank"
                                            class="group/btn w-full inline-flex items-center justify-center gap-2 bg-background-tertiary hover:bg-background-tertiary/80 border border-neutral/50 text-color-base px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg">
                                             {{ 'Get in Touch' }}
                                             <x-ri-arrow-right-fill class="size-4 transform transition-transform duration-300 group-hover/btn:translate-x-1" />
@@ -544,7 +627,7 @@
                                 </div>
                             @else
                                 <div class="relative overflow-hidden">
-                                    <img src="{{ asset('images/custom-plan.png') }}" alt="Custom Enterprise Plan"
+                                    <img src="{{ asset('assets/extended/n8n_enterprise_graphic.png') }}" alt="Custom Enterprise Plan"
                                         class="w-full h-56 object-cover">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                 </div>
@@ -564,7 +647,7 @@
                                         </p>
                                     </div>
                                     
-                                    <a href="https://contactus.com" wire:navigate 
+                                    <a href="https://forms.automata.host/enterprise/form" target="_blank" 
                                        class="group/btn w-full inline-flex items-center justify-center gap-2 bg-background-tertiary hover:bg-background-tertiary/80 border border-neutral/50 text-color-base px-4 py-3 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg">
                                         {{ 'Get in Touch' }}
                                         <x-ri-arrow-right-fill class="size-4 transform transition-transform duration-300 group-hover/btn:translate-x-1" />

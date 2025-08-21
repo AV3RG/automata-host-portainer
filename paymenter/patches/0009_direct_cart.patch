@@ -1,0 +1,20 @@
+--- a/app/Livewire/Products/Checkout.php
++++ b/app/Livewire/Products/Checkout.php
+@@ -47,6 +47,8 @@
+             return $this->redirect(route('products.show', ['category' => $this->category, 'product' => $this->product]), true);
+         }
+ 
++        $plan_set = isset($this->plan_id);
++
+         // Is there a existing item in the cart?
+         if (Cart::get()->has($this->cartProductKey) && Cart::get()->get($this->cartProductKey)->product->id === $this->product->id) {
+             $item = Cart::get()->get($this->cartProductKey);
+@@ -83,7 +85,7 @@
+ 
+         // As there is only one plan, config options and checkout config, we can directly call the checkout method to avoid confusion
+         // This is only done when the user is not editing the cart item
+-        if ($this->product->plans->count() === 1 && empty($this->configOptions) && empty($this->checkoutConfig)) {
++        if (($this->product->plans->count() === 1 || $plan_set) && empty($this->configOptions) && empty($this->checkoutConfig)) {
+             $this->checkout();
+         }
+     }

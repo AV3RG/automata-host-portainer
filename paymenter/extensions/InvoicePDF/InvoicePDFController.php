@@ -97,6 +97,10 @@ class InvoicePDFController
         
         return $html;
     }
+
+    private function getValueOrDefault($invoice, $key, $default = 'N/A') {
+        return $invoice->user->properties()->where('key', $key)->first()?->value ?? $default;
+    }
     
     /**
      * Replace template variables with actual invoice data
@@ -108,13 +112,18 @@ class InvoicePDFController
         $html = str_replace('{{{ invoice_number }}}', $invoice->number, $html);
         $html = str_replace('{{{ invoice_date }}}', $invoice->created_at->format('d M Y'), $html);
         // Customer information (Issued To)
-        $html = str_replace('{{{ customer_name }}}', $invoice->user->name ?? 'N/A', $html);
-        $html = str_replace('{{{ customer_address }}}', $invoice->user->properties()->where('key', 'address')->first()->value ?? 'N/A', $html);
-        $html = str_replace('{{{ customer_city }}}', $invoice->user->properties()->where('key', 'city')->first()->value ?? 'N/A', $html);
-        $html = str_replace('{{{ customer_state }}}', $invoice->user->properties()->where('key', 'state')->first()->value ?? 'N/A', $html);
-        $html = str_replace('{{{ customer_zip }}}', $invoice->user->properties()->where('key', 'zip')->first()->value ?? 'N/A', $html);
-        $html = str_replace('{{{ customer_country }}}', $invoice->user->properties()->where('key', 'country')->first()->value ?? 'N/A', $html);
+
+        $billingName = $this->getValueOrDefault($invoice, 'company_name', $invoice->user->name ?? 'N/A');
         
+        $html = str_replace('{{{ customer_name }}}', $billingName, $html);
+        $html = str_replace('{{{ customer_address }}}', $this->getValueOrDefault($invoice, 'address'), $html);
+        $html = str_replace('{{{ customer_address2 }}}', $this->getValueOrDefault($invoice, 'address2'), $html);
+        $html = str_replace('{{{ customer_city }}}', $this->getValueOrDefault($invoice, 'city'), $html);
+        $html = str_replace('{{{ customer_state }}}', $this->getValueOrDefault($invoice, 'state'), $html);
+        $html = str_replace('{{{ customer_zip }}}', $this->getValueOrDefault($invoice, 'zip'), $html);
+        $html = str_replace('{{{ customer_country }}}', $this->getValueOrDefault($invoice, 'country'), $html);
+        $html = str_replace('{{{ customer_tax_id }}}', $this->getValueOrDefault($invoice, 'tax_id'), $html);
+
         // Company information (Bill To)
         $companyName = config('settings.company_name', 'Your Company');
         $companyAddress = config('settings.company_address', 'Company Address');
@@ -123,7 +132,8 @@ class InvoicePDFController
         $companyZip = config('settings.company_zip', 'ZIP');
         $companyState = config('settings.company_state', 'State');
         $companyCountry = config('settings.company_country', 'Country');
-        
+        $companyTaxId = config('settings.company_tax_id', 'Tax ID');
+
         $html = str_replace('{{{ company_name }}}', $companyName, $html);
         $html = str_replace('{{{ company_address }}}', $companyAddress, $html);
         $html = str_replace('{{{ company_address2 }}}', $companyAddress2, $html);
@@ -131,6 +141,7 @@ class InvoicePDFController
         $html = str_replace('{{{ company_city }}}', $companyCity, $html);
         $html = str_replace('{{{ company_state }}}', $companyState, $html);
         $html = str_replace('{{{ company_country }}}', $companyCountry, $html);
+        $html = str_replace('{{{ company_tax_id }}}', $companyTaxId, $html);
 
         
         // Status button

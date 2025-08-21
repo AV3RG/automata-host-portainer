@@ -3,11 +3,13 @@
         <div>
             <div class="mt-8 text-white">
                 <h2 class="text-4xl font-extrabold leading-tight tracking-tight">
-                    Manage Your Billing with Ease
+                    Your Journey Starts Here
                 </h2>
-                <p class="mt-4 text-2xl font-semibold text-white/90">Stay on Top of Your Payments</p>
+                <p class="mt-4 text-2xl font-semibold text-white/90">
+                    Access 24/7 expert support and intelligent performance optimization.
+                </p>
                 <p class="mt-3 text-white/80">
-                    Access your invoices, update payment methods, and keep track of your subscriptions all in one place.
+                    Sign up to unlock full access, personalized tools, and a smarter way to work
                 </p>
             </div>
         </div>

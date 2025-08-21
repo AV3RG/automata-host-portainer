@@ -1,0 +1,31 @@
+--- a/app/Livewire/Cart.php
++++ b/app/Livewire/Cart.php
+@@ -107,12 +107,28 @@
+         $this->updateTotal();
+     }
+ 
++    public function allSameBillingCycle()
++    {
++            $firstBillingDuration = ClassesCart::get()->first()->plan->billingDuration;
++            foreach (ClassesCart::get() as $cartItem) {
++                    if ($cartItem->plan->billingDuration != $firstBillingDuration) {
++                        return false;
++                    }
++            }
++            return true;
++    }
++
+     // Checkout
+     public function checkout()
+     {
+         if (ClassesCart::get()->isEmpty() || Session::has('cart') === false) {
+             return $this->notify('Your cart is empty', 'error');
+         }
++
++        if (!$this->allSameBillingCycle()) {
++            return $this->notify('You have products with different billing duration in the same cart', 'error');
++        }
++
+         if (!Auth::check()) {
+             return redirect()->guest('login');
+         }

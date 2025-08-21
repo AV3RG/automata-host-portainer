@@ -767,5 +767,19 @@ return [
             'default' => 'https://github.com/yourprofile',
             'description' => 'URL for the GitHub profile',
         ],
+        [
+            'name' => 'users_base_add',
+            'label' => 'Users Fake Addition',
+            'type' => 'number',
+            'default' => '100',
+            'description' => 'Add this amount of users to the users count',
+        ],
+        [
+            'name' => 'servers_base_add',
+            'label' => 'Servers Fake Addition',
+            'type' => 'number',
+            'default' => '200',
+            'description' => 'Add this amount of servers to the servers count',
+        ],
     ],
 ];

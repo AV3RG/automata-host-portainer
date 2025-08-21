@@ -106,7 +106,7 @@
                             <x-ri-user-heart-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-purple-500 mb-3">
-                            {{ number_format(\App\Models\User::count()) }}+
+                            {{ number_format(\App\Models\User::count() + theme('users_base_add', 0)) }}+
                         </div>
                         <div class="text-color-base font-bold text-lg mb-2">{{ theme('stats_users_title', 'Happy Gamers') }}</div>
                         <div class="text-color-muted text-sm">{{ theme('stats_users_subtitle', 'Join our community') }}</div>
@@ -120,7 +120,7 @@
                             <x-ri-database-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-orange-500 mb-3">
-                            {{ number_format(\App\Models\Service::count()) }}+
+                            {{ number_format(\App\Models\Service::count() + theme('servers_base_add', 0)) }}+
                         </div>
                         <div class="text-color-base font-bold text-lg mb-2">{{ theme('stats_servers_title', 'Servers Deployed') }}</div>
                         <div class="text-color-muted text-sm">{{ theme('stats_servers_subtitle', 'Powering gaming worldwide') }}</div>

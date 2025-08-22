@@ -15,6 +15,8 @@ COPY extensions/InvoicePDF /app/extensions/Others/InvoicePDF
 COPY extensions/FacebookPixel /app/extensions/Others/FacebookPixel
 COPY extensions/Others/ProductTags /app/extensions/Others/ProductTags
 
+COPY scripts/ /app/scripts
+
 # Set proper permissions
 RUN chmod -R 755 /app/themes && \
     chmod -R 755 /app/extensions/Gateways/Razorpay && \

@@ -1,0 +1,5 @@
+app/Admin/Resources/CouponResource.php
+app/Classes/Cart.php
+app/Models/Coupon.php
+app/Models/CouponProduct.php
+database/migrations/2025_08_22_080001_add_plan_id_to_coupon_products_table.php

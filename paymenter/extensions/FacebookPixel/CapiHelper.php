@@ -43,6 +43,9 @@ class CapiHelper {
     }
 
     private static function countryCode($country) {
+        if (empty($country)) {
+            return null;
+        }
         try {
             $iso = new ISO3166();
             $data = $iso->alpha2($country);

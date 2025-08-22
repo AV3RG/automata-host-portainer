@@ -61,7 +61,6 @@ class FacebookPixel extends Extension
             return;
         }
 
-        \Log::info('Facebook Pixel Extension: Facebook SDK initialized successfully.');
         foreach (self::events as $eventType => $eventClass) {
             Event::listen(
                 $eventClass,

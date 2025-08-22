@@ -10,7 +10,22 @@ use App\Models\Service;
 class WebhookUtils {
 
     public static function onCharged($subscriptionEntity, $paymentEntity) {
-        $invoice = Invoice::findOrFail($subscriptionEntity->notes->invoice_id);
+        $servicesIds = explode(',', $subscriptionEntity->notes->services_ids);
+
+        $invoiceId = Service::findOrFail($servicesIds[0])
+            ->invoices()
+            ->where('status', 'pending')
+            ->orderByDesc('id')
+            ->first()
+            ?->id;
+
+        if (!$invoiceId) {
+            \Log::error('Razorpay: No pending invoice found for subscription', ['subscription_id' => $subscriptionEntity->id]);
+            return;
+        }
+
+        $invoice = Invoice::findOrFail($invoiceId);
+
         $user = $invoice->user;
         foreach ($invoice->items as $item) {
             if ($item->reference_type !== Service::class) {

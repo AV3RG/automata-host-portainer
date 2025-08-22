@@ -2,6 +2,9 @@
 
 namespace Paymenter\Extensions\Gateways\Razorpay;
 
+use App\Models\Service;
+
+
 class RazorpayUtils {
 
     public static function fetchAllPlans($api): array
@@ -69,11 +72,19 @@ class RazorpayUtils {
     public static function planDetailsGenerator($invoice, $total)
     {
 
+        \Log::info('Invoice: ' . json_encode($invoice));
+
         return [
-            'name' => "v1-" . "-" . $invoice->items->first()->reference->plan->billing_unit . "-" . $invoice->items->first()->reference->plan->billing_period . "-" . $total,
+            'name' => "v2" . "-" . $invoice->items->first()->reference->plan->billing_unit . "-" . $invoice->items->first()->reference->plan->billing_period . "-" . $total,
             'amount' => $total * 100,
             'currency' => $invoice->currency->code,
-            'description' => self::makeDescription($invoice)
+            'description' => self::makeDescription($invoice),
+            'notes' => [
+                'services_ids' => $invoice->items->filter(function ($item) {
+                    return $item->reference_type === Service::class;
+                })->pluck('reference_id')->join(',') . '',
+                'user_id' => $invoice->user->id . '',
+            ]
         ];
     }
 
@@ -87,8 +98,9 @@ class RazorpayUtils {
                 'name' => $planDetails['name'],
                 'amount' => $planDetails['amount'],
                 'currency' => $planDetails['currency'],
-                'description' => $planDetails['description']
-            )
+                'description' => $planDetails['description'],
+            ),
+            'notes' => $planDetails['notes']
         ));
         return $plan;
     }
@@ -131,10 +143,10 @@ class RazorpayUtils {
             'customer_id' => $customerId,
             'total_count' => self::totalCountCalculator($invoice),
             'notes' => [
-                'invoice_id' => $invoice->id . '',
-                'invoice_number' => $invoice->number . '',
-                'service_id' => $invoice->service_id . '',
-                'user_id' => $invoice->user_id . '',
+                'services_ids' => $invoice->items->filter(function ($item) {
+                    return $item->reference_type === Service::class;
+                })->pluck('reference_id')->join(',') . '',
+                'user_id' => $invoice->user->id . '',
             ],
         ));
     }

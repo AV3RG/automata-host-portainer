@@ -175,27 +175,8 @@ class Razorpay extends Gateway
 
             \Log::info("Razorpay customer ID: " . $razorpayCustomerId);
 
-            // Find plan
-            $fetchAllPlans = RazorpayUtils::fetchAllPlans($this->getApi());
-            $filteredPlans = array_filter($fetchAllPlans, function ($plan) use ($invoice, $total) {
-                return $plan['amount'] == $total * 100 &&
-                       $plan['currency'] == $invoice->currency->code &&
-                       $plan['period'] == RazorpayUtils::convertBillingUnitToRazorpay($invoice->items->first()->reference->plan->billing_period) &&
-                       isset($plan['description']) &&
-                       $plan['description'] === RazorpayUtils::makeDescription($invoice);
-            });
-            $filteredPlans = array_values($filteredPlans);
-            $firstPlan = count($filteredPlans) > 0 ? $filteredPlans[0] : null;
-            $description = $firstPlan ? $firstPlan['description'] : null;
-
-            if (!$firstPlan) {
-                // Create plan
-                $firstPlan = RazorpayUtils::createPlan($this->getApi(), $invoice, $total);
-                $description = $firstPlan['item']['description'];
-            }
-
-            \Log::info("Found plan: " . json_encode($firstPlan));
-            \Log::info("Billing period: " . $invoice->items->first()->reference->plan->billing_unit);
+            $firstPlan = RazorpayUtils::createPlan($this->getApi(), $invoice, $total);
+            $description = $firstPlan['item']['description'];
 
             $subscription = RazorpayUtils::createSubscription($this->getApi(), $invoice, $firstPlan['id'], $razorpayCustomerId);
             $keyId = $this->config('razorpay_testing_mode') ? $this->config('razorpay_test_key_id') : $this->config('razorpay_key_id');
@@ -363,6 +344,40 @@ class Razorpay extends Gateway
 //            ]);
 //        }
 //    }
+
+    public function callback(Request $request, $invoiceId)
+    {
+        \Log::info('Razorpay: Callback received', ['invoiceId' => $invoiceId]);
+        $keySecret = $this->config('razorpay_testing_mode') ? $this->config('razorpay_test_key_secret') : $this->config('razorpay_key_secret');
+        $subscription_id = $request->input('razorpay_subscription_id');
+        $payment_id = $request->input('razorpay_payment_id');
+        $expected_signature = $request->input('razorpay_signature');
+        $razorpay_signature = hash_hmac('sha256', $payment_id . '|' . $subscription_id, $keySecret);
+
+        if ($expected_signature !== $razorpay_signature) {
+            \Log::error('Razorpay: Invalid signature', ['expected_signature' => $expected_signature, 'razorpay_signature' => $razorpay_signature]);
+            return response()->json(['error' => 'Invalid signature'], 400);
+        }
+
+        $subscription = $this->getApi()->subscription->fetch($subscription_id);
+        $razorpayInvoice = $this->getApi()->invoice->all(['subscription_id'=>$subscription_id])->items[0];
+        $amountPaid = $razorpayInvoice->amount_paid;
+        $servicesIds = explode(',', $subscription->notes->services_ids);
+
+        $invoice = Invoice::findOrFail($invoiceId);
+
+        \Log::info('Services IDs: ' . json_encode($servicesIds));
+        foreach ($servicesIds as $serviceId) {
+            \Log::info('Service ID: ' . $serviceId);
+            $service = Service::findOrFail($serviceId);
+            $service->update(['subscription_id' => $subscription_id]);
+            $service->properties()->updateOrCreate(['key' => 'has_razorpay_subscription'], ['value' => true]);
+        }
+
+        ExtensionHelper::addPayment($invoice->id, 'Razorpay', $amountPaid / 100, null, $payment_id);
+
+        return redirect()->route('invoices.show', ['invoice' => $invoice->number, 'checkPayment' => 'true']);
+    }
 
     public function cancelSubscription(Service $service, Created $event)
     {

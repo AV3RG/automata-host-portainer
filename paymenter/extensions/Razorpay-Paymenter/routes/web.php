@@ -9,10 +9,10 @@ Route::post(
     [Razorpay::class, 'webhook']
 )->name('extensions.gateways.razorpay.webhook');
 
-Route::post('/extensions/gateways/razorpay/callback/{invoiceNumber}', function ($invoiceNumber) {
-    Log::info('Razorpay: Callback received', ['invoiceId' => $invoiceNumber]);
-    return redirect()->route('invoices.show', ['invoice' => $invoiceNumber, 'checkPayment' => 'true']);
-})->name('extensions.gateways.razorpay.callback');
+// pass the invoice number to the callback
+Route::post('/extensions/gateways/razorpay/callback/{invoiceId}',
+    [Razorpay::class, 'callback']
+)->name('extensions.gateways.razorpay.callback');
 
 Route::get('/extensions/gateways/razorpay/cancel/{invoiceNumber}', function ($invoiceNumber) {
     return redirect()->route('invoices.show', ['invoice' => $invoiceNumber, 'checkPayment' => 'false']);

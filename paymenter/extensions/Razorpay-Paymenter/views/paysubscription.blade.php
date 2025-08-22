@@ -10,7 +10,7 @@
         name: "{{ config('app.name', 'Paymenter') }}",
         description: "{{ $subscriptionDetails['description'] ?? 'Subscription' }}",
         currency: "INR",
-        callback_url: "{{ route('extensions.gateways.razorpay.callback', ['invoiceNumber' => $invoiceNumber]) }}",
+        callback_url: "{{ route('extensions.gateways.razorpay.callback', ['invoiceId' => $invoiceId]) }}",
         modal: {
             ondismiss: function() {
                 window.location.href = "{{ route('extensions.gateways.razorpay.cancel', ['invoiceNumber' => $invoiceNumber]) }}";

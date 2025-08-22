@@ -24,6 +24,9 @@
                         @endif
                         <div>
                             <h2 class="text-xl font-bold text-color-base mb-1">{{ $item->product->name }}</h2>
+                            <p class="text-sm text-color-muted leading-tight">
+                                {{ $item->plan->name }} Plan
+                            </p>
                             @if ($item->configOptions->isNotEmpty())
                                 <p class="text-sm text-color-muted leading-tight">
                                     @foreach ($item->configOptions as $option)

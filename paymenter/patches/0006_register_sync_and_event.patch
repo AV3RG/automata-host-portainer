@@ -9,7 +9,7 @@
  
  #[DisabledIf('registration_disabled')]
  class Register extends ComponentWithProperties
-@@ -50,10 +52,24 @@
+@@ -50,10 +52,25 @@
              'password' => Hash::make($this->password),
          ]);
  
@@ -22,6 +22,7 @@
 +            'password' => $this->password,
 +        ]);
 +        if (!$response->ok()) {
++            \Log::error('API call to make pelican account failed: ' . $response->body());
 +            return $this->addError('api', 'API call to make pelican account failed.');
 +        }
 +

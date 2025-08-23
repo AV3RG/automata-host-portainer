@@ -218,23 +218,27 @@ class Razorpay extends Gateway
         $payload = json_decode($request->getContent());
 
         // Handle the event
-        switch ($payload->event) {
-            // Normal payment
-            case 'subscription.charged':
-                $subscriptionEntity = $payload->payload->subscription->entity; // contains a RazorpaySubscription
-                $paymentEntity = $payload->payload->payment->entity; // contains a RazorpayPayment
-                WebhookUtils::onCharged($subscriptionEntity, $paymentEntity);
-                break;
-            case 'subscription.cancelled':
-                $subscriptionEntity = $payload->payload->subscription->entity;
-                WebhookUtils::onCancelled($subscriptionEntity);
-                break;
-            default:
-
-                // Not a event type we care about, just return 200
+        try {
+            switch ($payload->event) {
+                // Normal payment
+                case 'subscription.charged':
+                    $subscriptionEntity = $payload->payload->subscription->entity; // contains a RazorpaySubscription
+                    $paymentEntity = $payload->payload->payment->entity; // contains a RazorpayPayment
+                    WebhookUtils::onCharged($subscriptionEntity, $paymentEntity);
+                    break;
+                case 'subscription.cancelled':
+                    $subscriptionEntity = $payload->payload->subscription->entity;
+                    WebhookUtils::onCancelled($subscriptionEntity);
+                    break;
+                default:
+    
+                    // Not a event type we care about, just return 200
+            }
+        } catch (Exception $e) {
+            \Log::error('Razorpay webhook error: ' . $e->getMessage());
         }
 
-        http_response_code(200);
+        return http_response_code(200);
     }
 
 //    public function updateSubscription(Service $service)

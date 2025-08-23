@@ -20,8 +20,8 @@ class WebhookUtils {
             ?->id;
 
         if (!$invoiceId) {
-            \Log::error('Razorpay: No pending invoice found for subscription', ['subscription_id' => $subscriptionEntity->id]);
-            return;
+            \Log::info('Razorpay: No pending invoice found for subscription', ['subscription_id' => $subscriptionEntity->id]);
+            return true;
         }
 
         $invoice = Invoice::findOrFail($invoiceId);
@@ -38,6 +38,7 @@ class WebhookUtils {
             }
         }
         ExtensionHelper::addPayment($invoice->id, 'Razorpay', $paymentEntity->amount / 100, $fee ?? null, $paymentEntity->id);
+        return true;
     }
 
     public static function onCancelled($subscriptionEntity) {

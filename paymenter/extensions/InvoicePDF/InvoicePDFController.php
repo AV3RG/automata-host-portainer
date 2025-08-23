@@ -140,7 +140,7 @@ class InvoicePDFController
         $html = str_replace('{{{ company_zip }}}', $companyZip, $html);
         $html = str_replace('{{{ company_city }}}', $companyCity, $html);
         $html = str_replace('{{{ company_state }}}', $companyState, $html);
-        $html = str_replace('{{{ company_country }}}', $companyCountry, $html);
+        $html = str_replace('{{{ company_country }}}', 'India', $html);
         $html = str_replace('{{{ company_tax_id }}}', $companyTaxId, $html);
 
         

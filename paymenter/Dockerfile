@@ -1,7 +1,7 @@
 # Use the official Paymenter image as the base
 FROM ghcr.io/paymenter/paymenter:v1.2.10
 
-RUN composer require razorpay/razorpay:^2.9 facebook/php-business-sdk:^18.0 league/iso3166:^4.0 technikermathe/blade-lucide-icons
+RUN composer require razorpay/razorpay:^2.9 facebook/php-business-sdk:^18.0 league/iso3166:^4.0 technikermathe/blade-lucide-icons resend/resend-php
 
 # Copy our enhanced Razorpay extension with subscription support
 COPY extensions/Razorpay-Paymenter /app/extensions/Gateways/Razorpay
@@ -14,6 +14,7 @@ COPY extensions/FAQ /app/extensions/Others/FAQ
 COPY extensions/InvoicePDF /app/extensions/Others/InvoicePDF
 COPY extensions/FacebookPixel /app/extensions/Others/FacebookPixel
 COPY extensions/Others/ProductTags /app/extensions/Others/ProductTags
+COPY extensions/Greeter /app/extensions/Others/Greeter
 
 COPY scripts/ /app/scripts
 

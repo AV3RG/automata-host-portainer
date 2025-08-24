@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: nexus
+    restart: unless-stopped
+    ports:
+      - "${NEXUS_PORT:-8081}:8081"
+      - "${DOCKER_HTTP_PORT:-8082}:8082"
+      - "${DOCKER_HTTPS_PORT:-8083}:8083"
+    environment:
+      - NEXUS_SECURITY_RANDOMPASSWORD=true
+    volumes:
+      - nexus-data:/nexus-data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/service/rest/v1/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  nexus-data:
+    driver: local

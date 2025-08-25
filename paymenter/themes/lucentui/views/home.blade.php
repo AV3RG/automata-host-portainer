@@ -76,9 +76,9 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Uptime Stat -->
-                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up">
-                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-success/30 hover:border-success/50 rounded-2xl p-8 shadow-2xl hover:shadow-success/20">
-                        <div class="bg-success/20 text-success p-4 rounded-full inline-flex mb-6">
+                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up h-full">
+                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-success/30 hover:border-success/50 rounded-2xl p-8 shadow-2xl hover:shadow-success/20 h-full flex flex-col justify-center">
+                        <div class="bg-success/20 text-success p-4 rounded-full inline-flex mb-6 h-fit w-fit aspect-square mx-auto">
                             <x-ri-time-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-success mb-3">99.9%</div>
@@ -88,9 +88,9 @@
                 </div>
                 
                 <!-- Support Stat -->
-                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-100">
-                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-primary/30 hover:border-primary/50 rounded-2xl p-8 shadow-2xl hover:shadow-primary/20">
-                        <div class="bg-primary/20 text-primary p-4 rounded-full inline-flex mb-6">
+                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-100 h-full">
+                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-primary/30 hover:border-primary/50 rounded-2xl p-8 shadow-2xl hover:shadow-primary/20 h-full flex flex-col justify-center">
+                        <div class="bg-primary/20 text-primary p-4 rounded-full inline-flex mb-6 h-fit w-fit aspect-square mx-auto">
                             <x-ri-customer-service-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-primary mb-3">24/7</div>
@@ -100,9 +100,9 @@
                 </div>
                 
                 <!-- Users Stat -->
-                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-200">
-                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-purple-500/30 hover:border-purple-500/50 rounded-2xl p-8 shadow-2xl hover:shadow-purple-500/20">
-                        <div class="bg-purple-500/20 text-purple-500 p-4 rounded-full inline-flex mb-6">
+                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-200 h-full">
+                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-purple-500/30 hover:border-purple-500/50 rounded-2xl p-8 shadow-2xl hover:shadow-purple-500/20 h-full flex flex-col justify-center">
+                        <div class="bg-purple-500/20 text-purple-500 p-4 rounded-full inline-flex mb-6 h-fit w-fit aspect-square mx-auto">
                             <x-ri-user-heart-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-purple-500 mb-3">
@@ -114,9 +114,9 @@
                 </div>
                 
                 <!-- Servers Stat -->
-                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-300">
-                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-orange-500/30 hover:border-orange-500/50 rounded-2xl p-8 shadow-2xl hover:shadow-orange-500/20">
-                        <div class="bg-orange-500/20 text-orange-500 p-4 rounded-full inline-flex mb-6">
+                <div class="text-center transform transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-300 h-full">
+                    <div class="bg-gradient-to-br from-background-secondary/50 to-background-secondary/30 border-2 border-orange-500/30 hover:border-orange-500/50 rounded-2xl p-8 shadow-2xl hover:shadow-orange-500/20 h-full flex flex-col justify-center">
+                        <div class="bg-orange-500/20 text-orange-500 p-4 rounded-full inline-flex mb-6 h-fit w-fit aspect-square mx-auto">
                             <x-ri-database-line class="size-8" />
                         </div>
                         <div class="text-4xl md:text-5xl font-bold text-orange-500 mb-3">

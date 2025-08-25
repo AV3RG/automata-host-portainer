@@ -9,11 +9,6 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-primary/30 via-primary/15 to-primary/10"></div>
                 
                 <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="bg-primary/30 backdrop-blur-sm text-primary p-2.5 rounded-full shadow-lg">
-                            <x-ri-folder-fill class="size-5" />
-                        </div>
-                    </div>
                     <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white text-shadow-lg mb-2 drop-shadow-2xl">
                         {{ $category->name }}
                     </h1>

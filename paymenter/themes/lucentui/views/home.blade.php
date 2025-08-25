@@ -81,7 +81,7 @@
                         <div class="bg-success/20 text-success p-4 rounded-full inline-flex mb-6 h-fit w-fit aspect-square mx-auto">
                             <x-ri-time-line class="size-8" />
                         </div>
-                        <div class="text-4xl md:text-5xl font-bold text-success mb-3">99.9%</div>
+                        <div class="text-4xl md:text-5xl font-bold text-success mb-3">99%</div>
                         <div class="text-color-base font-bold text-lg mb-2">{{ theme('stats_uptime_title', 'Uptime Guarantee') }}</div>
                         <div class="text-color-muted text-sm">{{ theme('stats_uptime_subtitle', 'Industry-leading reliability') }}</div>
                     </div>

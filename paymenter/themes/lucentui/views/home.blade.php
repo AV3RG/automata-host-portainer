@@ -320,18 +320,18 @@
 
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Testimonial 1 -->
-                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-primary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-primary/40">
+                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-primary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-primary/40 flex flex-col h-full">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden flex-shrink-0">
                             <img src="{{ asset('assets/extended/pratham.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
                         </div>
-                        <div>
-                            <h4 class="font-bold text-color-base">{{ theme('testimonial_1_name', 'John Doe') }}</h4>
-                            <p class="text-color-muted text-sm">{{ theme('testimonial_1_role', 'Minecraft Server Admin') }}</p>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-color-base truncate">{{ theme('testimonial_1_name', 'John Doe') }}</h4>
+                            <p class="text-color-muted text-sm leading-tight" title="{{ theme('testimonial_1_role', 'Minecraft Server Admin') }}">{{ theme('testimonial_1_role', 'Minecraft Server Admin') }}</p>
                         </div>
                     </div>
-                    <p class="text-color-muted italic mb-4 text-lg">"{{ theme('testimonial_1_quote', 'Best hosting service I\'ve ever used. Zero downtime and lightning-fast support response!') }}"</p>
-                    <div class="flex text-warning text-lg">
+                    <p class="text-color-muted italic mb-4 text-lg flex-1">"{{ theme('testimonial_1_quote', 'Best hosting service I\'ve ever used. Zero downtime and lightning-fast support response!') }}"</p>
+                    <div class="flex text-warning text-lg mt-auto">
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />
@@ -341,18 +341,18 @@
                 </div>
 
                 <!-- Testimonial 2 -->
-                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-secondary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-secondary/40">
+                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-secondary/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-secondary/40 flex flex-col h-full">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
-                            <img src="{{ asset('assets/extended/nikit.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden flex-shrink-0">
+                            <img src="{{ asset('assets/extended/nikit.jpg') }}" alt="{{ theme('testimonial_2_name', 'Sarah Anderson') }}" class="w-full h-full object-cover">
                         </div>
-                        <div>
-                            <h4 class="font-bold text-color-base">{{ theme('testimonial_2_name', 'Sarah Anderson') }}</h4>
-                            <p class="text-color-muted text-sm">{{ theme('testimonial_2_role', 'Gaming Community Leader') }}</p>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-color-base truncate">{{ theme('testimonial_2_name', 'Sarah Anderson') }}</h4>
+                            <p class="text-color-muted text-sm leading-tight" title="{{ theme('testimonial_2_role', 'Gaming Community Leader') }}">{{ theme('testimonial_2_role', 'Gaming Community Leader') }}</p>
                         </div>
                     </div>
-                    <p class="text-color-muted italic mb-4 text-lg">"{{ theme('testimonial_2_quote', 'The performance boost was incredible. My players love the zero-lag experience!') }}"</p>
-                    <div class="flex text-warning text-lg">
+                    <p class="text-color-muted italic mb-4 text-lg flex-1">"{{ theme('testimonial_2_quote', 'The performance boost was incredible. My players love the zero-lag experience!') }}"</p>
+                    <div class="flex text-warning text-lg mt-auto">
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />
@@ -362,18 +362,18 @@
                 </div>
 
                 <!-- Testimonial 3 -->
-                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-success/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-success/40">
+                <div class="bg-gradient-to-br from-background-secondary/80 to-background-secondary/40 backdrop-blur-sm border border-success/20 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:border-success/40 flex flex-col h-full">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden">
-                            <img src="{{ asset('assets/extended/nishkarsh.jpg') }}" alt="{{ theme('testimonial_1_name', 'John Doe') }}" class="w-full h-full object-cover">
+                        <div class="w-12 h-12 rounded-full mr-4 overflow-hidden flex-shrink-0">
+                            <img src="{{ asset('assets/extended/nishkarsh.jpg') }}" alt="{{ theme('testimonial_3_name', 'Sarah Anderson') }}" class="w-full h-full object-cover">
                         </div>
-                        <div>
-                            <h4 class="font-bold text-color-base">{{ theme('testimonial_3_name', 'Sarah Anderson') }}</h4>
-                            <p class="text-color-muted text-sm">{{ theme('testimonial_3_role', 'Gaming Community Leader') }}</p>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-color-base truncate">{{ theme('testimonial_3_name', 'Sarah Anderson') }}</h4>
+                            <p class="text-color-muted text-sm leading-tight" title="{{ theme('testimonial_3_role', 'Gaming Community Leader') }}">{{ theme('testimonial_3_role', 'Gaming Community Leader') }}</p>
                         </div>
                     </div>
-                    <p class="text-color-muted italic mb-4 text-lg">"{{ theme('testimonial_3_quote', 'Professional grade hosting at an affordable price. Couldn\'t ask for more!') }}"</p>
-                    <div class="flex text-warning text-lg">
+                    <p class="text-color-muted italic mb-4 text-lg flex-1">"{{ theme('testimonial_3_quote', 'Professional grade hosting at an affordable price. Couldn\'t ask for more!') }}"</p>
+                    <div class="flex text-warning text-lg mt-auto">
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />
                         <x-ri-star-fill class="size-5 text-warning" />

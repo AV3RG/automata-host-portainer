@@ -174,7 +174,7 @@
                                 <p class="text-sm text-white/80">{{ theme('help_subtitle', '24/7 Discord') }}</p>
                             </div>
                         </div>
-                        <p class="text-sm text-white/70">Join our community of {{ number_format(\App\Models\User::count()) }}+ builders</p>
+                        <p class="text-sm text-white/70">Join our community of {{ number_format(\App\Models\User::count()) + theme('users_base_add', 0) }}+ builders</p>
                     </a>
 
                     <!-- Login/Dashboard -->

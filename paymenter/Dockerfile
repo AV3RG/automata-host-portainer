@@ -14,7 +14,6 @@ COPY extensions/FAQ /app/extensions/Others/FAQ
 COPY extensions/InvoicePDF /app/extensions/Others/InvoicePDF
 COPY extensions/FacebookPixel /app/extensions/Others/FacebookPixel
 COPY extensions/Others/ProductTags /app/extensions/Others/ProductTags
-COPY extensions/Greeter /app/extensions/Others/Greeter
 
 COPY scripts/ /app/scripts
 

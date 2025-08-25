@@ -110,10 +110,16 @@
                             <h4 class="font-semibold">{{ __('invoices.subtotal') }}:</h4>
                             <span>{{ $total->format($total->price - $total->tax) }}</span>
                         </div>
-                        @if ($total->tax > 0)
-                            <div class="flex justify-between items-center text-color-base">
-                                <h4 class="font-semibold">{{ \App\Classes\Settings::tax()->name }}:</h4>
-                                <span>{{ $total->formatted->tax }}</span>
+                        @if (Auth::check())
+                            @if ($total->tax > 0)
+                                <div class="flex justify-between items-center text-color-base">
+                                    <h4 class="font-semibold">{{ \App\Classes\Settings::tax()->name }}:</h4>
+                                    <span>{{ $total->formatted->tax }}</span>
+                                </div>
+                            @endif
+                        @else
+                            <div class="flex justify-between items-center text-color-base border-t border-dashed border-neutral/50 pt-4 mt-4">
+                                <span class="text-color-muted italic">{{ __('Taxes will be calculated after providing billing address') }}</span>
                             </div>
                         @endif
 
